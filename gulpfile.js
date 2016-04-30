@@ -8,7 +8,7 @@ var plumber =       require('gulp-plumber');
 
 gulp.task('js', function() {
   return gulp.src(['public/javascripts/angularApp.js', 'public/javascripts/controllers/*.js', 'public/javascripts/directives/*.js', 'public/javascripts/factories/*.js'])
-  .pipe(concat('public/javascripts/cmlg-app.js'))
+  .pipe(concat('public/cmlg-app.js'))
   .pipe(ngAnnotate())
   .pipe(uglify())
   .pipe(gulp.dest('.'))

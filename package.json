@@ -26,12 +26,9 @@
     "gulp-clean": "^0.3.2",
     "gulp-cli": "github:gulpjs/gulp-cli#4.0",
     "gulp-concat": "^2.6.0",
-    "gulp-document-write": "0.0.5",
-    "gulp-livereload": "^3.8.1",
     "gulp-ng-annotate": "^2.0.0",
     "gulp-notify": "^2.2.0",
     "gulp-plumber": "^1.1.0",
-    "gulp-replace": "^0.5.4",
     "gulp-sourcemaps": "^2.0.0-alpha",
     "gulp-uglify": "^1.5.3",
     "gulp-util": "^3.0.7"
