@@ -23,7 +23,7 @@
   "devDependencies": {
     "browser-sync": "^2.12.5",
     "browserify": "^13.0.0",
-    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp": "gulpjs/gulp#4.0",
     "gulp-clean": "^0.3.2",
     "gulp-cli": "github:gulpjs/gulp-cli#4.0",
     "gulp-concat": "^2.6.0",
