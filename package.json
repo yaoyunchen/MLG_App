@@ -17,13 +17,12 @@
     "morgan": "~1.6.1",
     "mysql": "^2.10.2",
     "ng-dialog": "^0.6.0",
+    "pg": "^4.5.5",
     "request": "^2.72.0",
     "serve-favicon": "~2.3.0"
   },
   "devDependencies": {
-    "browser-sync": "^2.12.5",
-    "browserify": "^13.0.0",
-    "gulp": "gulpjs/gulp#4.0",
+    "gulp": "github:gulpjs/gulp#4.0",
     "gulp-clean": "^0.3.2",
     "gulp-cli": "github:gulpjs/gulp-cli#4.0",
     "gulp-concat": "^2.6.0",
