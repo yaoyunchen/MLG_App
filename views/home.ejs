@@ -4,3 +4,57 @@
     <h4>Welcome to the cMLG App.</h4>
   </div>
 </div>
+
+<div class="row" 
+  ng-controller="summonerController"
+>
+  <div class="col-sm-12">
+    <form role="form" 
+      name="searchSummonerForm"
+      ng-submit="summonerSearch(searchSummonerForm.$valid)"
+      novalidate 
+    >
+      <input type="text" 
+        class="form-control input summoner-search"
+        name="searchSummonerName"
+        ng-model="searchSummonerName"
+        placeholder="Enter summoner name."
+        ng-minlength="4"
+        ng-maxlength="24"
+        required
+      />
+      <div class="input-group-btn">
+        <button type="submit" 
+          class="btn btn-warning summoner-search"
+          ng-click="submitted=true"
+        >
+          Search
+        </button>
+      </div>
+    </form>
+    <p ng-show="searchSummonerForm.searchSummonerName.$invalid && submitted">
+      Summoner name must be between 4 and 24 characters long.
+    </p>
+  </div>
+
+  <div class="col-sm-12 summoner-info">
+    <table class="table table-inverse table-borderless">
+      <tbody>
+        <tr>
+          <td class="col-sm-3">Summoner Name:</td>
+          <td class="col-sm-3" ng-bind="summoner.value.name"></td>
+        </tr>
+        <tr>
+          <td class="col-sm-3">ID:</td>
+          <td class="col-sm-3" ng-bind="summoner.value.id"></td>
+        </tr>
+        <tr>
+          <td  class="col-sm-3">Level:</td>
+          <td class="col-sm-3" ng-bind="summoner.value.summonerLevel"></td>
+        </tr>
+        <tr>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
