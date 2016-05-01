@@ -7,4 +7,12 @@ cMLGApp.config(function($routeProvider){
     templateUrl : 'home.ejs',
     controller  : 'mainController'
   })
+  .when('/signup', {
+    templateUrl : 'signup.ejs',
+    controller  : 'signupController'
+  })
+  .when('/login', {
+    templateUrl : 'login.ejs',
+    controller  : 'loginController'
+  })
 });
