@@ -4,12 +4,19 @@ cMLGApp.config(function($routeProvider){
   $routeProvider
   //Homepage
   .when('/', {
-    templateUrl : 'home.ejs',
-    controller  : 'mainController'
+    resolve: {
+      "check": function($location, $rootScope){
+        if (!$rootScope.loggedIn){
+          $location.path('/login');
+        }
+      }
+    },
+    templateUrl   : 'home.ejs',
+    controller    : 'mainController'
   })
   .when('/signup', {
-    templateUrl : 'signup.ejs',
-    controller  : 'signupController'
+    templateUrl   : 'signup.ejs',
+    controller    : 'signupController'
   })
   .when('/login', {
     templateUrl : 'login.ejs',

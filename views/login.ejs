@@ -1,7 +1,23 @@
-<div class="row">
+<div class="row" ng-controller="loginController">
   <div class="col-sm-12">
     <p>
       This is the login page.
     </p>
+  </div>
+  <div> 
+    <form name="logiForm" novalidate ng-submit="login()">
+      <p ng-show="(loginForm.username.$invalid || loginForm.password.$dirty) && loginForm.submitted">
+        Invalid Username or Password
+      </p>
+      <div>
+        <label> Username </label>
+        <input type="text" name="username" placeholder="Enter Summoner Name" ng-model="username" required>
+      </div>
+      <div>
+        <label> Password </label>
+        <input type="text" name="password" placeholder="Enter Password" ng-model="password" required>
+      </div>
+      <button type="submit" ng-disabled="loginForm.$invalid">Login</button>
+    </form>
   </div>
 </div>
