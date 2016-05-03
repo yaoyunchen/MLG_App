@@ -14,5 +14,5 @@ cMLGApp.config(function($routeProvider){
   .when('/login', {
     templateUrl : 'login.ejs',
     controller  : 'loginController'
-  })
+  });
 });

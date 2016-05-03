@@ -1,9 +1,41 @@
 <div class="row"
-  ng-controller="loginController"
+  ng-controller="signupController"
 >
   <div class="col-sm-12">
-    <p>
-      This is the signup page.
-    </p>
+    <form name="signupForm"
+      role="form"
+      class="form"
+      ng-submit="1"
+      novalidate 
+    >
+      <input type="text"
+        class="form-control input" 
+        name="signupName"
+        ng-model="signupName"
+        placeholder="Enter your summoner name."
+        ng-model-options="{updateOn: 'blur'}"
+        signup
+        required
+      />
+      <div ng-if="signupForm.$pending.summonerRegistered"> 
+        Checking if summoner is registered...
+      </div>
+      <div ng-if="signupForm.$error.summonerRegistered"> 
+        Summoner already registered.
+      </div>
+      <div ng-if="signupForm.$pending.summonerExists">
+        Checking if summoner exists...
+      </div>
+      <div ng-if="signupForm.$error.summonerExists">
+        Summoner does not exist.
+      </div>
+      <div ng-if="summoner.name">
+        Summoner exists!
+        {{ summoner }}
+      </div>
+      <div ng-if="signupForm.$error.connection">
+        Unable to verify summoner name.  Please try again later.
+      </div>
+    </form>
   </div>
 </div>

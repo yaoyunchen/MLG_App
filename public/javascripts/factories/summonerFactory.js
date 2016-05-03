@@ -11,7 +11,7 @@ cMLGApp.factory('$summoner', ['$http', '$q', function($http, $q) {
       var summoner = {};
       $http.get(url)
       .then(function(res) {
-
+        
         if (res.status == 200) {
           var key = summonerName;
           for (key in res.data) {
