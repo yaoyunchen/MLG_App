@@ -1,41 +1,117 @@
-<div class="row"
+<div class="row row-first"
   ng-controller="signupController"
 >
-  <div class="col-sm-12">
-    <form name="signupForm"
-      role="form"
-      class="form"
-      ng-submit="1"
-      novalidate 
-    >
-      <input type="text"
-        class="form-control input" 
-        name="signupName"
-        ng-model="signupName"
-        placeholder="Enter your summoner name."
-        ng-model-options="{updateOn: 'blur'}"
-        signup
-        required
-      />
-      <div ng-if="signupForm.$pending.summonerRegistered"> 
-        Checking if summoner is registered...
-      </div>
-      <div ng-if="signupForm.$error.summonerRegistered"> 
-        Summoner already registered.
-      </div>
-      <div ng-if="signupForm.$pending.summonerExists">
-        Checking if summoner exists...
-      </div>
-      <div ng-if="signupForm.$error.summonerExists">
-        Summoner does not exist.
-      </div>
-      <div ng-if="summoner.name">
-        Summoner exists!
-        {{ summoner }}
-      </div>
-      <div ng-if="signupForm.$error.connection">
-        Unable to verify summoner name.  Please try again later.
-      </div>
-    </form>
+  <div class="col-sm-12 col-title">
+    <h1>Sign Up</h1>
   </div>
+
+  <form name="signupForm"
+    role="form"
+    class="form"
+    ng-submit="1"
+    novalidate 
+  >
+    <div class="col-sm-12">
+      <!-- VERIFY SUMMONER NAME START -->
+      <div class="form-group floating-label-form-group">
+        <label for="signupName">
+          Summoner Name
+        </label>
+        <input type="text"
+          class="form-control" 
+          name="signupName"
+          ng-model="signupName"
+          placeholder="Summoner Name"
+          ng-model-options="{updateOn: 'blur'}"
+          signup
+          required
+        />
+      </div>
+      <span ng-if="signupForm.signupName.$$rawModelValue === undefined || signupForm.signupName.$$rawModelValue == ''">
+        <small class="text-muted">
+          Please use your League of Legends summoner in game name.
+        </small>
+      </span>
+      <span class="spinner" ng-hide="!loading">
+        <i class="fa fa-spinner fa-pulse fa-1x fa-fw margin-bottom"></i>
+        <span class="sr-only">Loading...</span>
+      </span>
+      <span ng-if="signupForm.$pending.summonerRegistered && signupForm.signupName.$$rawModelValue != ''"> 
+        <small class="text-muted">
+          Checking if summoner is registered...
+        </small>
+      </span>
+      <span ng-if="signupForm.$error.summonerRegistered && signupForm.signupName.$$rawModelValue != ''"> 
+        <small class="text-muted">
+          Summoner already registered.
+        </small>
+      </span>
+      <span ng-if="signupForm.$pending.summonerExists && signupForm.signupName.$$rawModelValue != ''">
+        <small class="text-muted">
+          Checking if summoner exists...
+        </small>
+      </span>
+      <span ng-if="signupForm.$error.summonerExists && signupForm.signupName.$$rawModelValue != ''">
+        <small class="text-muted">
+          Summoner does not exist!  Please check the entered summoner name.
+        </small>
+      </span>
+      <span ng-if="summoner.name">
+        <small class="text-muted">
+          Summoner name OK!
+        <small class="text-muted">
+      </span>
+      <span ng-if="signupForm.$error.connection">
+        <small class="text-muted">
+          Unable to verify summoner name.  Please try again later.
+        </small>
+      </span>  
+    </div>
+    <!-- VERIFY SUMMONER NAME END -->
+
+    <!-- SUMMONER EMAIL AND PASSWORD START -->
+    <div class="col-sm-12" ng-hide="hideInfoPane">
+      <div class="form-group floating-label-form-group">
+        <label for="signupEmail">
+          Email
+        </label>
+        <input type="email"
+          class="form-control" 
+          name="signupEmail"
+          ng-model="signupEmail"
+          placeholder="Email"
+          ng-model-options="{updateOn: 'blur'}"
+          signup
+          required
+        />
+      </div>
+      <small class="text-muted">
+        We won't spam you with emails, this is just for logging in and confirming account purposes.
+      </small>
+      <div class="form-group floating-label-form-group">
+        <label for="signupPass">
+          Password
+        </label>
+        <input type="password"
+          class="form-control" 
+          name="signupPass"
+          ng-model="signupPass"
+          placeholder="Password"
+          ng-model-options="{updateOn: 'blur'}"
+          signup
+          required
+        />
+      </div>
+      <small class="text-muted">
+        Please DO NOT use the same password as your League of Legends account.
+      </small>
+    </div>
+    <!-- SUMMONER EMAIL AND PASSWORD END -->
+  </form>
+
+
+  
+
+  
 </div>
+

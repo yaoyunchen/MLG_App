@@ -7,7 +7,7 @@ var sourcemaps =    require('gulp-sourcemaps');
 var plumber =       require('gulp-plumber');
 
 gulp.task('js', function() {
-  return gulp.src(['public/javascripts/angularApp.js', 'public/javascripts/controllers/*.js', 'public/javascripts/directives/*.js', 'public/javascripts/factories/*.js'])
+  return gulp.src(['public/javascripts/angularApp.js', 'public/javascripts/controllers/*.js', 'public/javascripts/directives/*.js', 'public/javascripts/factories/*.js', 'public/javascripts/floating-labels.js'])
   .pipe(concat('public/cmlg-app.js'))
   .pipe(ngAnnotate())
   // .pipe(uglify())
@@ -26,7 +26,7 @@ gulp.task('css', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(['public/javascripts/angularApp.js', 'public/javascripts/controllers/*.js', 'public/javascripts/directives/*.js', 'public/javascripts/factories/*.js'], gulp.parallel('js'));
+  gulp.watch(['public/javascripts/angularApp.js', 'public/javascripts/controllers/*.js', 'public/javascripts/directives/*.js', 'public/javascripts/factories/*.js', 'public/javascripts/floating-labels.js'], gulp.parallel('js'));
 
   gulp.watch(['public/stylesheets/*.css'], gulp.parallel('css'));
 });
