@@ -109,8 +109,34 @@
     <!-- SUMMONER EMAIL AND PASSWORD END -->
   </form>
 
+  <!-- SUMMONER IMAGE VERIFICATION START -->
+  <div class="col-sm-12 img-verify" ng-hide="hideImgPane">
+    <div class="row">
+      <div class="col-sm-6">
+        <h5>
+          Please change your summoner profile icon in League of Legends to the specified icon within the next 24 hours to verify the entered summoner name is yours.
+        </h5>
+        <h5>
+          Once we have verified that the account is linked to your League account, we will send you a confirmation email.
+        </h5>
+        <h5>
+          Please do not change the icon back until you receive the confirmation email, or your account will not be linked!
+        </h5>
+      </div>
+      <div class="col-sm-6 div-signup-icon">
 
-  
+        <img class="img-signup-icon" ng-src="http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/{{ setIcon }}.png"/>
+        
+      </div>
+    </div>
+    
+
+    
+  </div>
+
+  <!-- SUMMONER IMAGE VERIFICATION END -->
+
+    
 
   
 </div>

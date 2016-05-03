@@ -30,9 +30,20 @@ cMLGApp.controller('mainController', ['$scope', '$location', function($scope, $l
 }]);
 angular.module('cMLGApp').controller('signupController', ['$scope', function($scope) {
   $scope.pageClass = "page-signup";
-  $scope.summoner = {};
+  
   $scope.loading = false;
   $scope.hideInfoPane = true;
+  $scope.hideImgPane = true;
+
+  $scope.summoner = {};
+  $scope.icons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  $scope.setIcon = -1;
+
+  $scope.generateIcon = function() {
+    if ($scope.setIcon == -1) {
+      $scope.setIcon = $scope.icons[Math.floor(Math.random() * $scope.icons.length)];
+    }
+  };
 }]);
 
 var cMLGApp = angular.module('cMLGApp');
@@ -86,6 +97,7 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
               if (res.data === true) {
                 // Summoner registered in our database.
                 scope.hideInfoPane = true;
+                scope.hideImgPane = true;
                 model.$setValidity('summonerRegistered', false);
               } else if (res.data === false) {
                 // Summoner is not registered, check if the name entered is actual summoner name.
@@ -120,12 +132,17 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
                 
                 $timeout(function() {
                   scope.hideInfoPane = false;
+
+                  scope.generateIcon();
+                  scope.hideImgPane = false;
                 }, 1000);
                 
               } else if (res.data.hasOwnProperty('status') && res.data.status.status_code == 404) {
                 // If returned data shows that the summoner is not found.
                 scope.summoner = {};
                 scope.hideInfoPane = true;
+                scope.hideImgPane = true;
+
                 model.$setValidity('summonerExists', false);
               }
             }
