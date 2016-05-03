@@ -5,7 +5,7 @@
     </p>
   </div>
   <div> 
-    <form name="logiForm" novalidate ng-submit="login()">
+    <form name="loginForm" novalidate ng-submit="login()">
       <p ng-show="(loginForm.username.$invalid || loginForm.password.$dirty) && loginForm.submitted">
         Invalid Username or Password
       </p>
@@ -17,7 +17,7 @@
         <label> Password </label>
         <input type="text" name="password" placeholder="Enter Password" ng-model="password" required>
       </div>
-      <button type="submit" ng-disabled="loginForm.$invalid">Login</button>
+      <button type="submit" ng-disabled="loginForm.$invalid" ng-click="login()">Login</button>
     </form>
   </div>
 </div>

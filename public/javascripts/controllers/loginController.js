@@ -3,8 +3,9 @@ angular.module('cMLGApp').controller('loginController', ['$scope', function($sco
   $scope.pageClass = "page-login";
 
   $scope.login = function(){
+    console.log("submitted");
     if($scope.loginForm.$valid){
-      console.log("Logged in");
+      console.log("Logged in as Admin");
     } else {
       $scope.loginForm.submitted = true;
     }
