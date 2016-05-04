@@ -1,4 +1,4 @@
-<div class="row row-first"
+<div class="row row-first signup"
   ng-controller="signupController"
 >
   <div class="col-sm-12 col-title">
@@ -11,7 +11,7 @@
     ng-submit="1"
     novalidate 
   >
-    <div class="col-sm-12">
+    <div class="col-sm-12 signup-main">
       <!-- VERIFY SUMMONER NAME START -->
       <div class="form-group floating-label-form-group">
         <label for="signupName">
@@ -20,8 +20,8 @@
         <input type="text"
           class="form-control" 
           name="signupName"
-          ng-model="signupName"
           placeholder="Summoner Name"
+          ng-model="signupName"
           ng-model-options="{updateOn: 'blur'}"
           signup
           required
@@ -67,10 +67,17 @@
         </small>
       </span>  
     </div>
+    <div class="col-sm-12 signup-main">
+      <input type="button"
+        class="btn btn-danger "
+        ng-click="" 
+        value="That's me!"
+      />
+    </div>
     <!-- VERIFY SUMMONER NAME END -->
 
     <!-- SUMMONER EMAIL AND PASSWORD START -->
-    <div class="col-sm-12" ng-hide="hideInfoPane">
+    <div class="col-sm-12 signup-child" ng-show="!hideInfoPane">
       <div class="form-group floating-label-form-group">
         <label for="signupEmail">
           Email
@@ -105,12 +112,27 @@
       <small class="text-muted">
         Please DO NOT use the same password as your League of Legends account.
       </small>
+      
+      <div class="form-group signup-submit">
+        <input type="button"
+          class="btn btn-danger "
+          ng-click="createUser()" 
+          value="Create!"
+        />
+      </div>
     </div>
     <!-- SUMMONER EMAIL AND PASSWORD END -->
   </form>
 
+
+
+
+
+
+
+
   <!-- SUMMONER IMAGE VERIFICATION START -->
-  <div class="col-sm-12 img-verify" ng-hide="hideImgPane">
+  <div class="col-sm-12 signup-child" ng-show="!hideImgPane">
     <div class="row">
       <div class="col-sm-6">
         <h5>
@@ -129,15 +151,7 @@
         
       </div>
     </div>
-    
-
-    
   </div>
-
-  <!-- SUMMONER IMAGE VERIFICATION END -->
-
-    
-
-  
+  <!-- SUMMONER IMAGE VERIFICATION END -->  
 </div>
 

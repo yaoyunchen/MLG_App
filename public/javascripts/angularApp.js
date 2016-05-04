@@ -1,4 +1,4 @@
-var cMLGApp = angular.module('cMLGApp', ['ngRoute']);
+var cMLGApp = angular.module('cMLGApp', ['ngRoute', 'ngAnimate']);
 
 cMLGApp.config(function($routeProvider){
   $routeProvider

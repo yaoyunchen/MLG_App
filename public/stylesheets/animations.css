@@ -1,0 +1,20 @@
+.ng-hide-remove {
+  animation:  0.5s slideInUp ease-in;
+  z-index:    3000;
+}
+
+.ng-hide-add {
+  animation:  0.5s slideOutDown ease-in; 
+  z-index:    4000;
+}
+
+/* Sets the animation when page changes. */
+/*.page-home.ng-enter, .page-summoner.ng-enter {
+  animation:  slideInRight 0.5s both ease-in; 
+  z-index:    3000;
+}
+.page-home.ng-leave, .page-summoner.ng-leave {
+  animation:  slideOutLeft 0.5s both ease-in;
+  z-index:    4000;
+}*/
+

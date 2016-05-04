@@ -1,4 +1,4 @@
-var cMLGApp = angular.module('cMLGApp', ['ngRoute']);
+var cMLGApp = angular.module('cMLGApp', ['ngRoute', 'ngAnimate']);
 
 cMLGApp.config(["$routeProvider", function($routeProvider){
   $routeProvider
@@ -53,6 +53,14 @@ angular.module('cMLGApp').controller('signupController', ['$scope', function($sc
       $scope.setIcon = $scope.icons[Math.floor(Math.random() * $scope.icons.length)];
     }
   };
+
+  $scope.createUser = function() {
+    console.log('User data should be verified and saved to database now.')
+
+    $scope.generateIcon();
+    $scope.hideImgPane = false;
+  };
+
 }]);
 
 var cMLGApp = angular.module('cMLGApp');
@@ -105,9 +113,14 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
             if (res.status == 200) {
               if (res.data === true) {
                 // Summoner registered in our database.
-                scope.hideInfoPane = true;
-                scope.hideImgPane = true;
+                scope.summoner = {};
+
                 model.$setValidity('summonerRegistered', false);
+
+                scope.hideImgPane = true;
+                $timeout(function() {
+                  scope.hideInfoPane = true;
+                }, 250)
               } else if (res.data === false) {
                 // Summoner is not registered, check if the name entered is actual summoner name.
                 summonerExists();
@@ -139,20 +152,18 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
 
                 model.$setValidity('summonerExists', true);
                 
-                $timeout(function() {
-                  scope.hideInfoPane = false;
-
-                  scope.generateIcon();
-                  scope.hideImgPane = false;
-                }, 1000);
+                scope.hideInfoPane = false;
                 
               } else if (res.data.hasOwnProperty('status') && res.data.status.status_code == 404) {
                 // If returned data shows that the summoner is not found.
                 scope.summoner = {};
-                scope.hideInfoPane = true;
-                scope.hideImgPane = true;
 
                 model.$setValidity('summonerExists', false);
+                
+                scope.hideImgPane = true;
+                $timeout(function() {
+                  scope.hideInfoPane = true;
+                }, 250)
               }
             }
           }, function(res) {

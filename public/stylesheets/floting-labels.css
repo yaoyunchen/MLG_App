@@ -17,6 +17,7 @@
   z-index: 1;
   font-size: 1.5em;
   resize: none;
+  text-align: center;
 }
   
 .floating-label-form-group label {

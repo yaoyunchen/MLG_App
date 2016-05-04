@@ -14,4 +14,12 @@ angular.module('cMLGApp').controller('signupController', ['$scope', function($sc
       $scope.setIcon = $scope.icons[Math.floor(Math.random() * $scope.icons.length)];
     }
   };
+
+  $scope.createUser = function() {
+    console.log('User data should be verified and saved to database now.')
+
+    $scope.generateIcon();
+    $scope.hideImgPane = false;
+  };
+
 }]);
