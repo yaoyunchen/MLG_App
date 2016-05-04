@@ -4,13 +4,14 @@ cMLGApp.config(function($routeProvider){
   $routeProvider
   //Homepage
   .when('/', {
-    resolve: {
-      "check": function($location, $rootScope){
-        if (!$rootScope.loggedIn){
-          $location.path('/login');
-        }
-      }
-    },
+  // .when('/', {
+  //   resolve: {
+  //     "check": function($location, $rootScope){
+  //       if (localStorage['username'] === 'undefined'){
+  //         $location.path('/login');
+  //       }
+  //     }
+  //   },
     templateUrl   : 'home.ejs',
     controller    : 'mainController'
   })

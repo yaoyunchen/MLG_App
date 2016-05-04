@@ -2,8 +2,15 @@ var cMLGApp = angular.module('cMLGApp', ['ngRoute', 'ngAnimate']);
 
 cMLGApp.config(["$routeProvider", function($routeProvider){
   $routeProvider
-  //Homepage
+  // Homepage
   .when('/', {
+  //   resolve: {
+  //     "check": function($location, $rootScope){
+  //       if (localStorage['username'] === 'undefined'){
+  //         $location.path('/login');
+  //       }
+  //     }
+  //   },
     templateUrl : 'home.ejs',
     controller  : 'mainController'
   })
@@ -16,16 +23,25 @@ cMLGApp.config(["$routeProvider", function($routeProvider){
     controller  : 'loginController'
   });
 }]);
-angular.module('cMLGApp').controller('loginController', ['$scope', function($scope) {
+angular.module('cMLGApp').controller('loginController', ['$scope', '$location', '$rootScope', function($scope, $location, $rootScope) {
 
   $scope.pageClass = "page-login";
   
   $scope.login = function(){
     console.log("submitted");
-    if($scope.loginForm.$valid){
-      console.log("Logged in as Admin");
+    //checks database for user
+
+    if($scope.loginForm.$valid && $scope.username == "admin" && $scope.password == "admin"){
+      $location.path('/');
+      $rootScope.loggedIn = $scope.username;
+      localStorage['username'] = $scope.username;
+      console.log("Logged in as " + $rootScope.loggedIn);
     } else {
+      alert('Wrong Stuff');
       $scope.loginForm.submitted = true;
+      localStorage['username'] = undefined;
+      $scope.username = "";
+      $scope.password = "";
     }
   }
 }]);
@@ -36,6 +52,14 @@ cMLGApp.controller('mainController', ['$scope', '$location', function($scope, $l
   $scope.pageClass = "page-home";
 
   $scope.$location = $location;
+
+  //checks local storage for logged in
+  var username = localStorage['username'];
+  console.log("you are currently logged in as: " + username);
+  if (username !== undefined){
+    console.log("will set log in here");
+  }
+
 }]);
 angular.module('cMLGApp').controller('signupController', ['$scope', function($scope) {
   $scope.pageClass = "page-signup";
