@@ -19,11 +19,6 @@ router.get('/', function(req, res) {
 });
 
 
-
-// DATABASE ROUTES
-
-
-
 // LEAGUE API ROUTES
 const REGIONS = {
   'br': 'BR1',
@@ -144,5 +139,43 @@ router.get('/search/:region/:summonerID/champmasteries/topchampions/:count', fun
   });
 });
 
+
+
+//providing database data
+var http = require('http');
+var pg = require('pg');
+var dbKey = require('../env.js');
+var conString = dbKey();
+
+router.get('/searchdatabase/:username/:password', function(req, res) {
+  var username = req.params.username;
+  var password = req.params.password;
+  console.log('looking in database for: ' + username + " with " + password + " as password");
+  // get a pg client from the connection pool
+  pg.connect(conString, function(err, client, done) {
+    var handleError = function(err) {
+      // no error occurred, continue with the request
+      if(!err) return false;
+      // An error occurred, remove the client from the connection pool.
+      if(client){
+        done(client);
+      }
+      res.writeHead(500, {'content-type': 'text/plain'});
+      res.end('An error occurred');
+      return true;
+    };
+    // handle an error from the connection
+    if(handleError(err)) return;
+
+    client.query('SELECT * FROM Users', function(err, result) {
+      // handle an error from the query
+      if(handleError(err)) return;
+      done();
+      console.log('The result is: ' + result.rows[0].username + ":" + result.rows[0].email);
+      res.writeHead(200, {'content-type': 'text/plain'});
+      res.end('The result is: ' + result.rows[0].username + ":" + result.rows[0].email);
+    });
+  });
+});
 
 module.exports = router;

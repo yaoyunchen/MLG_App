@@ -60,5 +60,48 @@ app.use(function(err, req, res, next) {
   });
 });
 
-
 module.exports = app;
+
+
+// //providing database data
+// var http = require('http');
+// var pg = require('pg');
+// var dbKey = require('./env.js');
+// var conString = dbKey();
+
+// var checkUsername = function(req, res) {
+//   // get a pg client from the connection pool
+//   pg.connect(conString, function(err, client, done) {
+//     var handleError = function(err) {
+//       // no error occurred, continue with the request
+//       if(!err) return false;
+//       // An error occurred, remove the client from the connection pool.
+//       if(client){
+//         done(client);
+//       }
+//       res.writeHead(500, {'content-type': 'text/plain'});
+//       res.end('An error occurred');
+//       return true;
+//     };
+//     // handle an error from the connection
+//     if(handleError(err)) return;
+
+//     client.query('SELECT * FROM Users', function(err, result) {
+//       // handle an error from the query
+//       if(handleError(err)) return;
+//       done();
+//       console.log('The result is: ' + result.rows[0].username + ":" + result.rows[0].email);
+//       res.writeHead(200, {'content-type': 'text/plain'});
+//       res.end('The result is: ' + result.rows[0].username + ":" + result.rows[0].email);
+//     });
+//   });
+// }
+// var server = http.createServer(checkUsername);
+// server.listen(3001);
+
+
+app.listen(8888, function(){
+  console.log('ready on port 8888');
+});
+
+
