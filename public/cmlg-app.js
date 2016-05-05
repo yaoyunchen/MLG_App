@@ -4,13 +4,6 @@ cMLGApp.config(["$routeProvider", function($routeProvider){
   $routeProvider
   // Homepage
   .when('/', {
-  //   resolve: {
-  //     "check": function($location, $rootScope){
-  //       if (localStorage['username'] === 'undefined'){
-  //         $location.path('/login');
-  //       }
-  //     }
-  //   },
     templateUrl : 'home.ejs',
     controller  : 'mainController'
   })
@@ -21,6 +14,17 @@ cMLGApp.config(["$routeProvider", function($routeProvider){
   .when('/login', {
     templateUrl : 'login.ejs',
     controller  : 'loginController'
+  })
+  .when('/createMatch', {
+    resolve: {
+      "check": function($location, $rootScope){
+        if (localStorage['username'] === 'undefined'){
+          $location.path('/login');
+        }
+      }
+    },
+    templateUrl : 'createMatch.ejs',
+    controller  : 'createMatchController'
   });
 }]);
 angular.module('cMLGApp').controller('loginController', ['$scope', '$location', '$rootScope', function($scope, $location, $rootScope) {
@@ -61,6 +65,23 @@ cMLGApp.controller('mainController', ['$scope', '$location', function($scope, $l
   }
 
 }]);
+
+angular.module('cMLGApp').controller('createMatchController', ['$scope', function($scope) {
+  $scope.pageClass = "page-createMatch";
+
+  $scope.min = function() {
+    $scope.bet = 100;
+    console.log($scope.bet);
+  }
+
+  $scope.max = function() {
+    $scope.bet = 1000;
+    console.log($scope.bet);
+  }
+
+}]);
+
+
 angular.module('cMLGApp').controller('signupController', ['$scope', function($scope) {
   $scope.pageClass = "page-signup";
   

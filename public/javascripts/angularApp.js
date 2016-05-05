@@ -4,14 +4,6 @@ cMLGApp.config(function($routeProvider){
   $routeProvider
   //Homepage
   .when('/', {
-  // .when('/', {
-  //   resolve: {
-  //     "check": function($location, $rootScope){
-  //       if (localStorage['username'] === 'undefined'){
-  //         $location.path('/login');
-  //       }
-  //     }
-  //   },
     templateUrl   : 'home.ejs',
     controller    : 'mainController'
   })
@@ -22,5 +14,16 @@ cMLGApp.config(function($routeProvider){
   .when('/login', {
     templateUrl : 'login.ejs',
     controller  : 'loginController'
+  })
+  .when('/createMatch', {
+    resolve: {
+      "check": function($location, $rootScope){
+        if (localStorage['username'] === 'undefined'){
+          $location.path('/login');
+        }
+      }
+    },
+    templateUrl : 'createMatch.ejs',
+    controller  : 'createMatchController'
   });
 });

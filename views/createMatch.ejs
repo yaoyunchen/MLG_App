@@ -1,0 +1,36 @@
+<div class="row" ng-controller="createMatchController">
+  <div class="col-title">
+    <h3>
+      =This is the match creation page=
+    </h3>
+  </div>
+</div>
+<!-- container-->
+<div class="row">
+  <!-- Selecting champions-->
+  <div class="col-sm-6">
+    <label>Choose your champion:</label>
+    <input type="text" name="chooseChampion" placeholder="Enter Champion Name" ng-model="chooseChampion"></input>
+  </div>
+  <!-- Filling up creation form-->
+  <div class="col-sm-6">
+    <form role="form" class="form" name="createMatchForm" novalidate>
+      <div>
+        <label>Invite Player:</label>
+        <input type="text" name="username" placeholder="Enter Summoner Name" ng-model="username" required>
+        <p ng-show="(username != null)">Inviting: {{username}}</p>
+      </div>
+      <div>
+        <label>Bet Amount:</label>
+        <input type="number" name="bet" placeholder="Enter Bet Amount" ng-model="bet" required >
+        <button ng-click="min()">MIN</button>
+        <button ng-click="max()">MAX</button> 
+      </div>
+      <p ng-show="(bet != null)">Betting: ${{bet}}</p>
+      <br/>
+      <div>
+        <button class="btn btn-danger" type="submit" ng-disabled="createMatchForm.$invalid" createMatchDirective>Send Invite</button>
+      </div>
+    </form>
+  </div>
+</div>
