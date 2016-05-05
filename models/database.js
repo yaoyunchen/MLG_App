@@ -23,8 +23,8 @@ pg.connect(conString, function(err, client, done) {
     mlg_tier INTEGER,\
     logined_today BOOLEAN,\
     friendlist TEXT,\
-    create_time TIMESTAMP,\
-    update_time TIMESTAMP\
+    create_time TIMESTAMP default current_timestamp,\
+    update_time TIMESTAMP default current_timestamp\
     )', function(err, result) {
     done();
     if(err) {
@@ -41,8 +41,9 @@ pg.connect(conString, function(err, client, done) {
     match_id INTEGER,\
     champion_id INTEGER,\
     match_type TEXT,\
-    create_time TIMESTAMP,\
-    update_time TIMESTAMP\
+    status INTEGER,\
+    create_time TIMESTAMP default current_timestamp,\
+    update_time TIMESTAMP default current_timestamp\
     )', function(err, result) {
     done();
     if(err) {
@@ -57,7 +58,7 @@ pg.connect(conString, function(err, client, done) {
     user_id INTEGER,\
     tournament_id INTEGER,\
     user_points INTEGER,\
-    user__total_games_played INTEGER,\
+    user_total_games_played INTEGER,\
     user_last_game_id INTEGER,\
     opponent_points INTEGER,\
     opponent_total_games_played INTEGER,\
@@ -66,8 +67,8 @@ pg.connect(conString, function(err, client, done) {
     opponent_likes INTEGER,\
     status INTEGER,\
     pot INTEGER,\
-    create_time TIMESTAMP,\
-    update_time TIMESTAMP,\
+    create_time TIMESTAMP default current_timestamp,\
+    update_time TIMESTAMP default current_timestamp,\
     end_time TIMESTAMP\
     )', function(err, result) {
     done();
@@ -84,8 +85,8 @@ pg.connect(conString, function(err, client, done) {
     tournament_level INTEGER,\
     last_match_id INTEGER,\
     status INTEGER,\
-    create_time TIMESTAMP,\
-    update_time TIMESTAMP\
+    create_time TIMESTAMP default current_timestamp,\
+    update_time TIMESTAMP default current_timestamp\
     )', function(err, result) {
     done();
     if(err) {
@@ -103,8 +104,8 @@ pg.connect(conString, function(err, client, done) {
     mlgp_bet INTEGER,\
     mlgp_change INTEGER,\
     status INTEGER,\
-    create_time TIMESTAMP,\
-    update_time TIMESTAMP\
+    create_time TIMESTAMP default current_timestamp,\
+    update_time TIMESTAMP default current_timestamp\
     )', function(err, result) {
     done();
     if(err) {
