@@ -1,23 +1,27 @@
 <div class="row" ng-controller="loginController">
-  <div class="col-sm-12">
-    <p>
-      This is the login page.
-    </p>
+  <div class="col-title">
+    <h3>
+      =This is the login page=
+    </h3>
   </div>
+  <br/>
   <div> 
-    <form name="loginForm" novalidate ng-submit="login()">
-      <p ng-show="(loginForm.username.$invalid || loginForm.password.$dirty) && loginForm.submitted">
-        Invalid Username or Password
+    <form role="form" class="form" name="loginForm" novalidate ng-submit="login()">
+      <p ng-show="(loginForm.username.$invalid || loginForm.password.$dirty) && loginForm.submitted" style="color:red;">
+        Invalid Username and/or Password
       </p>
-      <div>
-        <label> Username </label>
-        <input type="text" name="username" placeholder="Enter Summoner Name" ng-model="username" required>
+      <div class="form-group floating-label-form-group">
+        <label> Username: </label>
+        <input class="form-control" type="text" name="username" placeholder="Enter Summoner Name" ng-model="username" required>
       </div>
-      <div>
-        <label> Password </label>
-        <input type="text" name="password" placeholder="Enter Password" ng-model="password" required>
+      <div class="form-group floating-label-form-group">
+        <label> Password: </label>
+        <input class="form-control" type="text" name="password" placeholder="Enter Password" ng-model="password" required>
       </div>
-      <button type="submit" ng-disabled="loginForm.$invalid" loginDirective>Login</button>
+      <br/>
+      <div class="col-title">
+        <button class="btn btn-danger" type="submit" ng-disabled="loginForm.$invalid" loginDirective>Login</button>
+      </div>
     </form>
   </div>
 </div>
