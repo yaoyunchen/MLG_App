@@ -6,13 +6,19 @@
   </div>
   <br/>
   <div> 
-    <form role="form" class="form" name="loginForm" novalidate ng-submit="login()">
+    <form role="form" class="form" name="loginForm" novalidate ng-submit="validLogin()">
       <p ng-show="(loginForm.username.$invalid || loginForm.password.$dirty) && loginForm.submitted" style="color:red;">
         Invalid Username and/or Password
       </p>
       <div class="form-group floating-label-form-group">
         <label> Email: </label>
-        <input class="form-control" type="email" name="username" placeholder="Enter Summoner Name" ng-model="username" required>
+        <input class="form-control" 
+          type="email" 
+          name="email" 
+          placeholder="Enter Email" 
+          ng-model="email" 
+          required
+          />
       </div>
       <div class="form-group floating-label-form-group">
         <label> Password: </label>
@@ -20,8 +26,11 @@
       </div>
       <br/>
       <div class="col-title">
-        <button class="btn btn-danger" type="submit" ng-disabled="loginForm.$invalid" loginDirective>Login</button>
+        <button class="btn btn-danger" type="submit" ng-disabled="false" loginDirective>Login</button>
       </div>
     </form>
   </div>
+
+  User info: {{ user }}
 </div>
+

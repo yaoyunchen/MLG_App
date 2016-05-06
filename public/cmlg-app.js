@@ -56,25 +56,43 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$locat
 
 }]);
 
-angular.module('cMLGApp').controller('loginController', ['$scope', '$location', '$rootScope', 'users', function($scope, $location, $rootScope, users) {
+angular.module('cMLGApp').controller('loginController', ['$scope', '$location', '$users', function($scope, $location, $users) {
 
   $scope.pageClass = "page-login";
 
-  $scope.login = function(){
-    console.log("submitted");
-    if($scope.loginForm.$valid && $scope.username == "admin" && $scope.password == "admin"){
-      $location.path('/');
-      $rootScope.loggedIn = $scope.username;
-      localStorage['username'] = $scope.username;
-      console.log("Logged in as " + $rootScope.loggedIn);
-    } else {
-      alert('Wrong Stuff');
-      $scope.loginForm.submitted = true;
-      localStorage['username'] = undefined;
-      $scope.username = "";
-      $scope.password = "";
-    }
+  $scope.user = {};
+  $scope.email = 'kwan.andy@hotmail.com';
+  $scope.password = "password";
+
+  $scope.validLogin = function() {
+    $scope.user = $users.get($scope.email, $scope.password, $scope.displayUser());
+  };
+
+  $scope.displayUser = function() {
+
+    console.log('here');
+    console.log($scope.user);
   }
+
+  // $scope.login = function(){
+   
+
+
+
+
+  //   // if($scope.loginForm.$valid && $scope.username == "admin" && $scope.password == "admin"){
+  //   //   $location.path('/');
+  //   //   $scope.loggedIn = $scope.username;
+  //   //   localStorage['username'] = $scope.username;
+  //   //   console.log("Logged in as " + $scope.loggedIn);
+  //   // } else {
+  //   //   alert('Wrong Stuff');
+  //   //   $scope.loginForm.submitted = true;
+  //   //   localStorage['username'] = undefined;
+  //   //   $scope.username = "";
+  //   //   $scope.password = "";
+  //   // }
+  // }
 }]);
 
 var cMLGApp = angular.module('cMLGApp');
@@ -319,23 +337,27 @@ cMLGApp.factory('$summoner', ['$http', '$q', function($http, $q) {
 }]);
 var cMLGApp = angular.module('cMLGApp');
 
-cMLGApp.factory('user', ['$http', '$q', function($http, $q) {
+cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
 
   return {
-    get: function(username, region, callback) {
+    get: function(email, password, callback) {
       var deferred = $q.defer();
-      var username = 'zelthrox';
-      var password = 'password';
-      var url = '/searchdatabase/' + username + '/' + password + JSONCALLBACK;
-      var user = {};
-      console.log('in factory');
-      $http.get(url)
-      .then(function(res) {
-        
-        if (res.status == 200) {
-          console.log('status 200 in factory');
-        }
-      });
+
+      var url = '/searchdatabase/' + email + '/' + password + JSONCALLBACK;
+
+      $http.get(url).then(function(res) {
+        // success.
+        deferred.resolve(res)
+      }).then(function(res) {
+        // fail.
+
+      }).finally(function() {
+        // do this regardless of success/fail.
+      })
+
+      if (callback) {
+        callback;
+      }
 
       return deferred.promise.$$state;
     }

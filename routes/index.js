@@ -147,10 +147,10 @@ var pg = require('pg');
 var dbKey = require('../env.js');
 var conString = dbKey();
 
-router.get('/searchdatabase/:username/:password', function(req, res) {
-  var username = req.params.username;
+router.get('/searchdatabase/:email/:password', function(req, res) {
+  var email = req.params.email;
   var password = req.params.password;
-  console.log('looking in database for: ' + username + " with " + password + " as password");
+  console.log('looking in database for: ' + email + " with " + password + " as password");
   // get a pg client from the connection pool
   pg.connect(conString, function(err, client, done) {
     var handleError = function(err) {
@@ -167,7 +167,7 @@ router.get('/searchdatabase/:username/:password', function(req, res) {
     // handle an error from the connection
     if(handleError(err)) return;
 
-    client.query("SELECT username, password FROM Users WHERE username='"+username+"'", function(err, result) {
+    client.query("SELECT username, email, password FROM Users WHERE email='"+email+"'", function(err, result) {
       // handle an error from the query
       if(handleError(err)) return;
       done();
