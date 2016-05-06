@@ -25,8 +25,20 @@ cMLGApp.config(["$routeProvider", function($routeProvider){
     },
     templateUrl : 'createMatch.ejs',
     controller  : 'createMatchController'
+  })
+  .when('/myMatch', {
+    resolve: {
+      "check": function($location, $rootScope){
+        if (localStorage['username'] === 'undefined'){
+          $location.path('/login');
+        }
+      }
+    },
+    templateUrl : 'myMatch.ejs',
+    controller  : 'myMatchController'
   });
 }]);
+
 angular.module('cMLGApp').controller('loginController', ['$scope', '$location', '$rootScope', function($scope, $location, $rootScope) {
 
   $scope.pageClass = "page-login";
@@ -66,8 +78,26 @@ cMLGApp.controller('mainController', ['$scope', '$location', function($scope, $l
 
 }]);
 
-angular.module('cMLGApp').controller('createMatchController', ['$scope', function($scope) {
+angular.module('cMLGApp').controller('myMatchController', ['$scope', function($scope) {
+  $scope.pageClass = "page-myMatch";
+        // Configuration settings for the graph.
+      $scope.config = {
+        title: 'title',
+        tooltips: true,
+        labels: true,
+        isAnimate: true
+      };
+
+      // Data for the graph.
+      $scope.data = {
+        series: ['a','b','c','d'],
+        data: [1,2,3,4]
+      };
+}]);
+
+angular.module('cMLGApp').controller('createMatchController', ['$scope', '$location', function($scope, $location) {
   $scope.pageClass = "page-createMatch";
+  $scope.betType = "closeTrue";
 
   $scope.min = function() {
     $scope.bet = 100;

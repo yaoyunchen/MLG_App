@@ -27,6 +27,10 @@
         <button ng-click="max()">MAX</button> 
       </div>
       <p ng-show="(bet != null)">Betting: ${{bet}}</p>
+      <div>
+        <input type="radio" ng-model="betType" value="closeTrue"> Close Match </input>
+        <input type="radio" ng-model="betType" value="closeFalse"> Big Win </input>
+      </div>
       <br/>
       <div>
         <button class="btn btn-danger" type="submit" ng-disabled="createMatchForm.$invalid" createMatchDirective>Send Invite</button>

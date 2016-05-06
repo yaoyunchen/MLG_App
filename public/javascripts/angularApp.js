@@ -25,5 +25,17 @@ cMLGApp.config(function($routeProvider){
     },
     templateUrl : 'createMatch.ejs',
     controller  : 'createMatchController'
+  })
+  .when('/myMatch', {
+    resolve: {
+      "check": function($location, $rootScope){
+        if (localStorage['username'] === 'undefined'){
+          $location.path('/login');
+        }
+      }
+    },
+    templateUrl : 'myMatch.ejs',
+    controller  : 'myMatchController'
   });
+}]);
 });
