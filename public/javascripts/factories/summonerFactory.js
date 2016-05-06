@@ -1,6 +1,6 @@
 var cMLGApp = angular.module('cMLGApp');
 
-const JSONCALLBACK = '?callback=JSON_CALLBACK';
+
 
 cMLGApp.factory('$summoner', ['$http', '$q', function($http, $q) {
 

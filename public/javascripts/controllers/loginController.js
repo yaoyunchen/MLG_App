@@ -1,4 +1,4 @@
-angular.module('cMLGApp').controller('loginController', ['$scope', '$location', '$rootScope', 'usersFactory', function($scope, $location, $rootScope, usersFactory) {
+angular.module('cMLGApp').controller('loginController', ['$scope', '$location', '$rootScope', 'users', function($scope, $location, $rootScope, users) {
 
   $scope.pageClass = "page-login";
 

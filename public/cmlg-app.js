@@ -1,15 +1,17 @@
 var cMLGApp = angular.module('cMLGApp', ['ngRoute', 'ngAnimate']);
 
+const JSONCALLBACK = '?callback=JSON_CALLBACK';
+
 cMLGApp.config(["$routeProvider", function($routeProvider){
   $routeProvider
-  // Homepage
+  //Homepage
   .when('/', {
-    templateUrl : 'home.ejs',
-    controller  : 'mainController'
+    templateUrl   : 'home.ejs',
+    controller    : 'mainController'
   })
   .when('/signup', {
-    templateUrl : 'signup.ejs',
-    controller  : 'signupController'
+    templateUrl   : 'signup.ejs',
+    controller    : 'signupController'
   })
   .when('/login', {
     templateUrl : 'login.ejs',
@@ -17,36 +19,49 @@ cMLGApp.config(["$routeProvider", function($routeProvider){
   })
   .when('/createMatch', {
     resolve: {
-      "check": function($location, $rootScope){
+      "check": ["$location", "$rootScope", function($location, $rootScope){
         if (localStorage['username'] === 'undefined'){
           $location.path('/login');
         }
-      }
+      }]
     },
     templateUrl : 'createMatch.ejs',
     controller  : 'createMatchController'
   })
   .when('/myMatch', {
     resolve: {
-      "check": function($location, $rootScope){
+      "check": ["$location", "$rootScope", function($location, $rootScope){
         if (localStorage['username'] === 'undefined'){
           $location.path('/login');
         }
-      }
+      }]
     },
     templateUrl : 'myMatch.ejs',
     controller  : 'myMatchController'
   });
 }]);
+angular.module('cMLGApp').controller('createMatchController', ['$scope', '$location', function($scope, $location) {
+  $scope.pageClass = "page-createMatch";
+  $scope.betType = "closeTrue";
+  
+  $scope.min = function() {
+    $scope.bet = 100;
+    console.log($scope.bet);
+  }
 
-angular.module('cMLGApp').controller('loginController', ['$scope', '$location', '$rootScope', function($scope, $location, $rootScope) {
+  $scope.min = function() {
+    $scope.bet = 1000;
+    console.log($scope.bet);
+  }
+
+}]);
+
+angular.module('cMLGApp').controller('loginController', ['$scope', '$location', '$rootScope', 'users', function($scope, $location, $rootScope, users) {
 
   $scope.pageClass = "page-login";
-  
+
   $scope.login = function(){
     console.log("submitted");
-    //checks database for user
-
     if($scope.loginForm.$valid && $scope.username == "admin" && $scope.password == "admin"){
       $location.path('/');
       $rootScope.loggedIn = $scope.username;
@@ -77,7 +92,6 @@ cMLGApp.controller('mainController', ['$scope', '$location', function($scope, $l
   }
 
 }]);
-
 angular.module('cMLGApp').controller('myMatchController', ['$scope', function($scope) {
   $scope.pageClass = "page-myMatch";
         // Configuration settings for the graph.
@@ -94,23 +108,6 @@ angular.module('cMLGApp').controller('myMatchController', ['$scope', function($s
         data: [1,2,3,4]
       };
 }]);
-
-angular.module('cMLGApp').controller('createMatchController', ['$scope', '$location', function($scope, $location) {
-  $scope.pageClass = "page-createMatch";
-  $scope.betType = "closeTrue";
-
-  $scope.min = function() {
-    $scope.bet = 100;
-    console.log($scope.bet);
-  }
-
-  $scope.max = function() {
-    $scope.bet = 1000;
-    console.log($scope.bet);
-  }
-
-}]);
-
 
 angular.module('cMLGApp').controller('signupController', ['$scope', function($scope) {
   $scope.pageClass = "page-signup";
@@ -164,6 +161,37 @@ cMLGApp.directive('homepage', ['$location', function($location){
     transclude: true,
     templateUrl: 'home.ejs', 
   }
+}]);
+angular.module('cMLGApp').directive('loginDirective', ["$timeout", "$q", "$http", function($timeout, $q, $http) {
+  return {
+    retrict: 'AE',
+    require: 'ngModel',
+    link: function(scope, elm, attr, model) {
+      userExists = function() {
+        var username = scope.loginForm.username;
+        var password = scope.loginForm.password;
+        var url = '/searchdatabase/' + username + '/' + password +'?callback=JSON_CALLBACK';
+
+        return $http.get(url)
+          .then(function(res) {
+            // Connected to LoL API to confirm summoner actually exists.
+            if (res.status == 200) {
+              // Successful connection to routes and have data returned.  
+              if (res != "") {
+                // If returned data contains a summoner's information.
+                console.log("success: " + res);
+              } else if (res.data.hasOwnProperty('status') && res.data.status.status_code == 404) {
+                // If returned data shows that the summoner is not found.
+                console.log('failed');
+              }
+            }
+          }, function(res) {
+            // Unable to connect to LoL API to verify summoner name.
+                console.log('failed');
+          });
+      };
+    }
+  };
 }]);
 var cMLGApp = angular.module('cMLGApp');
 
@@ -252,7 +280,7 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
 
 var cMLGApp = angular.module('cMLGApp');
 
-const JSONCALLBACK = '?callback=JSON_CALLBACK';
+
 
 cMLGApp.factory('$summoner', ['$http', '$q', function($http, $q) {
 
@@ -282,6 +310,30 @@ cMLGApp.factory('$summoner', ['$http', '$q', function($http, $q) {
               callback();
             }
           }
+        }
+      });
+
+      return deferred.promise.$$state;
+    }
+  };
+}]);
+var cMLGApp = angular.module('cMLGApp');
+
+cMLGApp.factory('user', ['$http', '$q', function($http, $q) {
+
+  return {
+    get: function(username, region, callback) {
+      var deferred = $q.defer();
+      var username = 'zelthrox';
+      var password = 'password';
+      var url = '/searchdatabase/' + username + '/' + password + JSONCALLBACK;
+      var user = {};
+      console.log('in factory');
+      $http.get(url)
+      .then(function(res) {
+        
+        if (res.status == 200) {
+          console.log('status 200 in factory');
         }
       });
 

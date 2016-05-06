@@ -1,8 +1,6 @@
 var cMLGApp = angular.module('cMLGApp');
 
-const JSONCALLBACK = '?callback=JSON_CALLBACK';
-
-cMLGApp.factory('$user', ['$http', '$q', function($http, $q) {
+cMLGApp.factory('user', ['$http', '$q', function($http, $q) {
 
   return {
     get: function(username, region, callback) {
