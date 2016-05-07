@@ -33,3 +33,6 @@ a {
   margin-top:     10px;
 }
 
+.alert-msg {
+  color: red;
+}

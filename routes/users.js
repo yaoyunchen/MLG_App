@@ -58,16 +58,36 @@ router.get('/db/search/users/login/:email/:password', function(req, res) {
     // handle an error from the connection
     if(handleError(err)) return;
 
-    client.query("SELECT username, email, password FROM Users WHERE email='"+email+"'", function(err, result) {
+    client.query("SELECT id, username, email, password FROM Users WHERE email='"+email+"' AND password='"+password+"'", function(err, result) {
       // handle an error from the query
       if(handleError(err)) return;
       done();
-      res.writeHead(200, {'content-type': 'text/plain'});
-      res.end('The result is: ' + result.rows[0].username + ":" + result.rows[0].email);
+      res.json(result);
     });
   });
 });
 
+router.post('/db/post/match_request/:username/:champion/:bet/:betType/:matchType', function(req, res) {
+  var username = req.params.username;
+  var champion = req.params.champion;
+  var bet = req.params.bet;
+  var betType = req.params.betType;
+  var matchType = req.params.matchType;
+  pg.connect(conString, function(err, client, done) {
+    if(err) {
+      return console.error('error fetching client from pool', err);
+    }
+    //creating Users table
+    client.query("INSERT INTO MatchRequests (user_id, champion_id, match_type, status, bet, bettype) \
+    VALUES ('"+ username + "'," + champion + "," + matchType + ",0," + bet + "," + betType + ");", function(err, result) {
+      done();
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("done updating Users Table");
+    });
+  });
+})
 
 
 module.exports = router;

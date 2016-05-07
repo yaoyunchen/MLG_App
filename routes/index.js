@@ -139,6 +139,22 @@ router.get('/search/:region/:summonerID/champmasteries/topchampions/:count', fun
   });
 });
 
+// Specified number of top champion mastery entries by number of champion points.
+router.get('/search/allchampions', function(req, res) {
+
+  var championName = getPlatformID(req.params.champion);
+
+  var path = 'https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?champData=image&api_key=' + API_KEY;
+
+  request.get(path, function(err, response) {
+    if (!err) {
+      res.json(JSON.parse(response.body));
+    } else {
+      console.error(err);
+    }
+  });
+});
+
 module.exports = router;
 
 /* SQL QUERY LINES

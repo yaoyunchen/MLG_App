@@ -1,4 +1,4 @@
-angular.module('cMLGApp').controller('createMatchController', ['$scope', '$location', function($scope, $location) {
+angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champions', '$matchFactory', function($scope, $champions, $matchFactory) {
   $scope.pageClass = "page-createMatch";
   $scope.betType = "closeTrue";
   
@@ -12,6 +12,54 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$locat
     console.log($scope.bet);
   }
 
+  $scope.loading = false;
+  $scope.userExists;
+  $scope.summoner = {};
+  $scope.matchType = 1;
 
+  $scope.submittedChampion = false;
+  $scope.championList = {};
+  $scope.championExists;
+  $scope.selectedChampion = {
+    id : {},
+    key : {},
+    name : {},
+    title : {},
+    image : {}
+  };
+
+  $scope.championData = $champions.get();
+  console.log('getting Champion');
+  console.log($scope.championData);
+
+  $scope.validChampion = function() {
+    $scope.submittedChampion = true;
+    $scope.championList = $scope.championData.value.data.data;
+    for (var champ in $scope.championList) {
+      // skip loop if the property is from prototype
+      if (!$scope.championList.hasOwnProperty(champ)) continue;
+      var originalName = $scope.championList[champ].name;
+      var normName = originalName.toLowerCase().replace(' ','').replace('\'','');
+      var normChampion = $scope.champion.toLowerCase().replace(' ','').replace('\'','');
+      if (normName === normChampion){
+        $scope.championExists = true;
+        $scope.selectedChampion = {
+          id : $scope.championList[champ].id,
+          key : $scope.championList[champ].key,
+          name : $scope.championList[champ].name,
+          title : $scope.championList[champ].title,
+          image : $scope.championList[champ].image.full
+        };
+        console.log($scope.selectedChampion);
+        break;
+      } else {
+        $scope.championExists = false;
+        $scope.selectedChampion = {};
+      }
+    }
+  }
+  $scope.createMatchRequest = function() {
+    $matchFactory.post(localStorage['username'], $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+  }
 
 }]);

@@ -7,7 +7,7 @@
   <br/>
   <div> 
     <form role="form" class="form" name="loginForm" ng-submit="validLogin()">
-      <p ng-show="(loginForm.username.$invalid || loginForm.password.$dirty) && loginForm.submitted" style="color:red;">
+      <p class="alert-msg" ng-show="(loginForm.username.$invalid || loginForm.password.$dirty) && loginForm.submitted">
         Invalid Username and/or Password
       </p>
       <div class="form-group floating-label-form-group">
@@ -22,7 +22,12 @@
       </div>
       <div class="form-group floating-label-form-group">
         <label> Password: </label>
-        <input class="form-control" type="password" name="password" placeholder="Enter Password" ng-model="password" required>
+        <input class="form-control" 
+          type="password" 
+          name="password" 
+          placeholder="Enter Password" 
+          ng-model="password" 
+          required>
       </div>
       <br/>
       <div class="col-title">
@@ -31,8 +36,6 @@
     </form>
   </div>
 
-  User info: {{ userData }}
-  Email info: {{ emailData }}
-  Password info: {{ passwordData }}
+  {{data.rows}};
 </div>
 

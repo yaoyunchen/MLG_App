@@ -40,7 +40,7 @@ cMLGApp.config(["$routeProvider", function($routeProvider) {
     controller  : 'myMatchController'
   });
 }]);
-angular.module('cMLGApp').controller('createMatchController', ['$scope', '$location', function($scope, $location) {
+angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champions', '$matchFactory', function($scope, $champions, $matchFactory) {
   $scope.pageClass = "page-createMatch";
   $scope.betType = "closeTrue";
   
@@ -54,7 +54,55 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$locat
     console.log($scope.bet);
   }
 
+  $scope.loading = false;
+  $scope.userExists;
+  $scope.summoner = {};
+  $scope.matchType = 1;
 
+  $scope.submittedChampion = false;
+  $scope.championList = {};
+  $scope.championExists;
+  $scope.selectedChampion = {
+    id : {},
+    key : {},
+    name : {},
+    title : {},
+    image : {}
+  };
+
+  $scope.championData = $champions.get();
+  console.log('getting Champion');
+  console.log($scope.championData);
+
+  $scope.validChampion = function() {
+    $scope.submittedChampion = true;
+    $scope.championList = $scope.championData.value.data.data;
+    for (var champ in $scope.championList) {
+      // skip loop if the property is from prototype
+      if (!$scope.championList.hasOwnProperty(champ)) continue;
+      var originalName = $scope.championList[champ].name;
+      var normName = originalName.toLowerCase().replace(' ','').replace('\'','');
+      var normChampion = $scope.champion.toLowerCase().replace(' ','').replace('\'','');
+      if (normName === normChampion){
+        $scope.championExists = true;
+        $scope.selectedChampion = {
+          id : $scope.championList[champ].id,
+          key : $scope.championList[champ].key,
+          name : $scope.championList[champ].name,
+          title : $scope.championList[champ].title,
+          image : $scope.championList[champ].image.full
+        };
+        console.log($scope.selectedChampion);
+        break;
+      } else {
+        $scope.championExists = false;
+        $scope.selectedChampion = {};
+      }
+    }
+  }
+  $scope.createMatchRequest = function() {
+    $matchFactory.post(localStorage['username'], $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+  }
 
 }]);
 
@@ -196,6 +244,85 @@ cMLGApp.directive('homepage', ['$location', function($location){
     templateUrl: 'home.ejs', 
   }
 }]);
+angular.module('cMLGApp').directive('invitePlayerDirective', ["$timeout", "$q", "$http", function($timeout, $q, $http) {
+  return {
+    retrict: 'AE',
+    require: 'ngModel',
+    link: function(scope, elm, attr, model) {
+      model.$asyncValidators.summonerRegistered = function() {
+        scope.loading = true;
+        console.log('summonerRegistered!');
+        return $http.get('/db/search/users/' + scope.createMatchForm.username.$$rawModelValue + JSONCALLBACK, {timeout: 5000})
+          .then(function(res) {
+            console.log('inside this function');
+            if (res.status == 200) {
+              if (res.data.rowCount != 0) {
+                // Summoner registered in our database.
+                scope.summoner = {};
+
+                scope.userExists = true;
+                console.log('user exists');
+                $timeout(function() {
+                  scope.hideInfoPane = true;
+                }, 250)
+              } else {
+                // Summoner is not registered, check if the name entered is actual summoner name.
+                scope.userExists = false;
+                console.log('user does not exists');
+              }
+            }
+          }, function(res){
+            // Unable to connect to users database to verify summoner name.
+            model.$setValidity('connection', false);
+          }).finally(function() {
+            scope.loading = false;
+          });
+      };
+
+      summonerExists = function() {
+        var region = 'na';
+        var name = scope.createMatchForm.username.$$rawModelValue;
+        var url = '/search/' + region + '/' + name + '?callback=JSON_CALLBACK';
+
+        return $http.get(url)
+          .then(function(res) {
+            // Connected to LoL API to confirm summoner actually exists.
+            if (res.status == 200) {
+              // Successful connection to routes and have data returned.  
+              if (res.data.hasOwnProperty(name)) {
+                // If returned data contains a summoner's information.
+                scope.summoner.name = res.data[name].name;
+                scope.summoner.id = res.data[name].id;
+                scope.summoner.icon = res.data[name].profileIconId;
+
+                model.$setValidity('summonerExists', true);
+                
+                scope.hideInfoPane = false;
+                
+              } else if (res.data.hasOwnProperty('status') && res.data.status.status_code == 404) {
+                // If returned data shows that the summoner is not found.
+                scope.summoner = {};
+
+                model.$setValidity('summonerExists', false);
+                
+                scope.hideImgPane = true;
+                scope.setIcon = -1;
+
+                $timeout(function() {
+                  scope.hideInfoPane = true;
+                }, 250)
+              }
+            }
+          }, function(res) {
+            // Unable to connect to LoL API to verify summoner name.
+            model.$setValidity('connection', false);
+          });
+      };
+
+    }
+  };
+}]);
+
 var cMLGApp = angular.module('cMLGApp');
 
 cMLGApp.directive('navbar', function() {
@@ -284,6 +411,47 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
   };
 }]);
 
+var cMLGApp = angular.module('cMLGApp');
+
+cMLGApp.factory('$champions', ['$http', '$q', function($http, $q) {
+
+  return {
+    get: function(callback) {
+      var deferred = $q.defer();
+
+      var url = '/search/allchampions?callback=JSON_CALLBACK';
+
+      $http.get(url).then(function(res) {
+        // success.
+        deferred.resolve(res);
+
+      }).then(function(res) {
+        // fail.
+      }).finally(function() {
+        // do this regardless of success/fail.
+      })
+      return deferred.promise.$$state;
+    }
+  };
+}]);
+var cMLGApp = angular.module('cMLGApp');
+
+cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
+
+  return {
+    post: function(username, champion, bet, betType, matchType) {
+      var url = '/db/post/match_request/'+username+'/'+champion+'/'+bet+'/'+betType+'/'+matchType;
+      $http.post(url).then(function(res) {
+        //success
+      }).then(function(res) {
+        // fail.
+        deferred.resolve(res);
+      }).finally(function() {
+        // do this regardless of success/fail.
+      })
+    }
+  };
+}]);
 var cMLGApp = angular.module('cMLGApp');
 
 
