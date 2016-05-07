@@ -11,8 +11,7 @@ var conString = dbKey();
 
 router.get('/db/search/users/:username', function(req, res) {
   var username = req.params.username;
-  var query = "SELECT username, email, password FROM Users WHERE username='" + username + "'";
-  
+  var query = "SELECT id, username, email, password FROM Users WHERE username='" + username + "'";
   pg.connect(conString, function(err, client, done) {
     var handleError = function(err) {
       // no error occurred, continue with the request
@@ -58,7 +57,8 @@ router.get('/db/search/users/login/:email/:password', function(req, res) {
     // handle an error from the connection
     if(handleError(err)) return;
 
-    client.query("SELECT id, username, email, password FROM Users WHERE email='"+email+"' AND password='"+password+"'", function(err, result) {
+    var query = "SELECT username, email, password FROM Users WHERE email='" + email + "'"
+    client.query(query, function(err, result) {
       // handle an error from the query
       if(handleError(err)) return;
       done();
@@ -84,8 +84,10 @@ router.post('/db/post/match_request/:username/:champion/:bet/:betType/:matchType
       return console.error('error fetching client from pool', err);
     }
     //creating Users table
-    client.query("INSERT INTO MatchRequests (user_id, champion_id, match_type, status, bet, bettype) \
-    VALUES ('"+ username + "'," + champion + "," + matchType + ",0," + bet + "," + betType + ");", function(err, result) {
+    var query = "INSERT INTO MatchRequests (user_id, champion_id, match_type, status, bet, bettype) \
+    VALUES ('"+ username + "'," + champion + "," + matchType + ",0," + bet + "," + betType + ");";
+    
+    client.query(query, function(err, result) {
       done();
       if(err) {
         return console.error('error running query', err);
@@ -93,6 +95,35 @@ router.post('/db/post/match_request/:username/:champion/:bet/:betType/:matchType
       console.log("done updating Users Table");
     });
   });
+})
+
+
+router.post('/db/post/user/:data', function(req, res) {
+  pg.connect(conString, function(err, client, done) {
+    var handleError = function(err) {
+      // no error occurred, continue with the request
+      if(!err) return false;
+      // An error occurred, remove the client from the connection pool.
+      if(client){
+        done(client);
+      }
+      res.writeHead(500, {'content-type': 'text/plain'});
+      res.end('An error occurred');
+      return true;
+    };
+    // handle an error from the connection
+    if(handleError(err)) return;
+
+    var columns = '(username, email, user_icon, password, summoner_id, summoner_icon, verification, mlg_points, mlg_tier, logined_today, friendlist) ';
+    var query = 'INSERT INTO USERS ' + columns + 'VALUES (' + req.params.data + ');';
+
+    client.query(query, function(err, result) {
+      // handle an error from the query
+      if(handleError(err)) return;
+      done();
+      res.end('User saved.');
+    });
+  })
 })
 
 

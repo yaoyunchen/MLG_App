@@ -13,12 +13,13 @@ angular.module('cMLGApp').directive('signup', function($timeout, $q, $http) {
                 scope.summoner = {};
 
                 scope.userExists = true;
+                scope.summonerExists = true;
                 scope.hideImgPane = true;
                 scope.setIcon = -1;
 
                 $timeout(function() {
                   scope.hideInfoPane = true;
-                }, 250)
+                }, 200)
               } else {
                 // Summoner is not registered, check if the name entered is actual summoner name.
                 scope.userExists = false;
@@ -48,6 +49,7 @@ angular.module('cMLGApp').directive('signup', function($timeout, $q, $http) {
                 scope.summoner.name = res.data[name].name;
                 scope.summoner.id = res.data[name].id;
                 scope.summoner.icon = res.data[name].profileIconId;
+                scope.summonerExists = true;
 
                 model.$setValidity('summonerExists', true);
                 
@@ -56,7 +58,7 @@ angular.module('cMLGApp').directive('signup', function($timeout, $q, $http) {
               } else if (res.data.hasOwnProperty('status') && res.data.status.status_code == 404) {
                 // If returned data shows that the summoner is not found.
                 scope.summoner = {};
-
+                scope.summonerExists = false;
                 model.$setValidity('summonerExists', false);
                 
                 scope.hideImgPane = true;

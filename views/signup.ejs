@@ -41,7 +41,7 @@
           Checking if summoner is registered...
         </small>
       </span>
-      <span ng-if="userExists === true && signupForm.signupName.$$rawModelValue != ''"> 
+      <span ng-if="userExists && summonerExists && signupForm.signupName.$$rawModelValue != ''"> 
         <small class="text-muted">
           Summoner already registered.
         </small>
@@ -51,12 +51,12 @@
           Checking if summoner exists...
         </small>
       </span>
-      <span ng-if="signupForm.$error.summonerExists && signupForm.signupName.$$rawModelValue != ''">
+      <span ng-if="!summonerExists && summonerExists != undefined && !summoner.name && signupForm.signupName.$$rawModelValue != ''">
         <small class="text-muted">
           Summoner does not exist!  Please check the entered summoner name.
         </small>
       </span>
-      <span ng-if="summoner.name">
+      <span ng-if="summonerExists && !userExists">
         <small class="text-muted">
           Summoner name OK!
         </small class="text-muted">
@@ -74,6 +74,7 @@
         value="That's me!"
       />
     </div>
+
     <!-- VERIFY SUMMONER NAME END -->
 
     <!-- SUMMONER EMAIL AND PASSWORD START -->
@@ -86,6 +87,7 @@
           class="form-control" 
           name="signupEmail"
           ng-model="signupEmail"
+          ng-disabled="lockCreate"
           placeholder="Email"
           ng-model-options="{updateOn: 'blur'}"
           signup
@@ -103,6 +105,7 @@
           class="form-control" 
           name="signupPass"
           ng-model="signupPass"
+          ng-disabled="lockCreate"
           placeholder="Password"
           ng-model-options="{updateOn: 'blur'}"
           signup
@@ -116,19 +119,24 @@
       <div class="form-group signup-submit">
         <input type="button"
           class="btn btn-danger "
-          ng-click="createUser()" 
+          ng-click="createUser()"
+          ng-disabled="lockCreate"
           value="Create!"
         />
       </div>
     </div>
     <!-- SUMMONER EMAIL AND PASSWORD END -->
+    <div class="col-sm-12 signup-error">
+      <ul role="tablist" style="text-align: left">
+        <li role="presentation"
+          ng-repeat="error in errorMsgs"
+        >      
+          <p>{{ error }}</p>
+        </li>
+      </ul>
+
+    </div>
   </form>
-
-
-
-
-
-
 
 
   <!-- SUMMONER IMAGE VERIFICATION START -->
@@ -146,12 +154,20 @@
         </h5>
       </div>
       <div class="col-sm-6 div-signup-icon">
-
         <img class="img-signup-icon" ng-src="http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/{{ setIcon }}.png"/>
-        
       </div>
     </div>
   </div>
-  <!-- SUMMONER IMAGE VERIFICATION END -->  
+  <!-- SUMMONER IMAGE VERIFICATION END -->
+      <div class="col-sm-12">
+      <input type="button"
+        class="btn btn-danger "
+        ng-click="go('/')"
+        ng-show="lockCreate"
+        value="Return"
+      />
+    </div>
+
 </div>
+
 
