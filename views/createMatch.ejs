@@ -9,8 +9,14 @@
 <div class="row">
   <!-- Selecting champions-->
   <div class="col-sm-6">
-    <label>Choose your champion:</label>
-    <input type="text" name="chooseChampion" placeholder="Enter Champion Name" ng-model="chooseChampion"></input>
+    <form name="chooseChampionForm" role="form" class="form" novalidate>
+      <label class="col-sm-12 col-title"> =Choose your champion= </label>
+      <input class="form-control" type="text" name="chooseChampion" placeholder="Enter Champion Name" ng-model="chooseChampion"></input>
+      <div class="col-sm-12 col-title">
+        <button class="btn btn-danger" ng-click="browseChamps()">Browse</button>
+        <button class="btn btn-danger" type="submit" ng-disabled="chooseChampionForm.$invalid">Lock In</button>
+      </div>
+    </form>
   </div>
   <!-- Filling up creation form-->
   <div class="col-sm-6">
@@ -33,7 +39,7 @@
       </div>
       <br/>
       <div>
-        <button class="btn btn-danger" type="submit" ng-disabled="createMatchForm.$invalid" createMatchDirective>Send Invite</button>
+        <button class="btn btn-danger" type="submit" ng-disabled="createMatchForm.$invalid">Send Invite</button>
       </div>
     </form>
   </div>

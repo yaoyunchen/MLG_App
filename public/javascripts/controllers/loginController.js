@@ -2,15 +2,31 @@ angular.module('cMLGApp').controller('loginController', ['$scope', '$location', 
 
   $scope.pageClass = "page-login";
 
-  $scope.user = {};
-  $scope.email = 'kwan.andy@hotmail.com';
-  $scope.password = "password";
+  $scope.data = {
+    value : {
+      username : "",
+      email : "" ,
+      password : "" 
+    }
+  };
 
   $scope.validLogin = function() {
-    $scope.user = $users.get($scope.email, $scope.password, $scope.displayUser());
+    $scope.data = $users.get($scope.email.toLowerCase(), $scope.password, $scope.displayUser());
   };
 
   $scope.displayUser = function() {
+
+    $scope.$watch(function(){
+      console.log($scope.data);
+      if($scope.data.value.hasOwnProperty('username') === true){
+        $location.path('/');
+        localStorage['username'] = $scope.data.value.username;
+        console.log("Logged in as " + $scope.loggedIn);
+      } else if ($scope.data.value === 'error') {
+        $scope.loginForm.submitted = true;
+        localStorage['username'] = undefined;
+      }
+    }, true);
   }
 
   // $scope.login = function(){

@@ -7,9 +7,11 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$locat
     console.log($scope.bet);
   }
 
-  $scope.min = function() {
+  $scope.max = function() {
     $scope.bet = 1000;
     console.log($scope.bet);
   }
+
+
 
 }]);

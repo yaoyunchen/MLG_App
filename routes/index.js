@@ -141,7 +141,6 @@ router.get('/search/:region/:summonerID/champmasteries/topchampions/:count', fun
 
 module.exports = router;
 
-
 /* SQL QUERY LINES
 =============[ CREATING NEW ROWS ]=============
 // registering Users (need to provide values)

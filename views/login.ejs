@@ -6,7 +6,7 @@
   </div>
   <br/>
   <div> 
-    <form role="form" class="form" name="loginForm" novalidate ng-submit="validLogin()">
+    <form role="form" class="form" name="loginForm" ng-submit="validLogin()">
       <p ng-show="(loginForm.username.$invalid || loginForm.password.$dirty) && loginForm.submitted" style="color:red;">
         Invalid Username and/or Password
       </p>
@@ -26,11 +26,13 @@
       </div>
       <br/>
       <div class="col-title">
-        <button class="btn btn-danger" type="submit" ng-disabled="false" loginDirective>Login</button>
+        <button class="btn btn-danger" type="submit" ng-disabled="loginForm.$invalid">Login</button>
       </div>
     </form>
   </div>
 
-  User info: {{ user }}
+  User info: {{ userData }}
+  Email info: {{ emailData }}
+  Password info: {{ passwordData }}
 </div>
 

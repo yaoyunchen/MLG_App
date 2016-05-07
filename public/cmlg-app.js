@@ -49,10 +49,12 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$locat
     console.log($scope.bet);
   }
 
-  $scope.min = function() {
+  $scope.max = function() {
     $scope.bet = 1000;
     console.log($scope.bet);
   }
+
+
 
 }]);
 
@@ -60,15 +62,31 @@ angular.module('cMLGApp').controller('loginController', ['$scope', '$location', 
 
   $scope.pageClass = "page-login";
 
-  $scope.user = {};
-  $scope.email = 'kwan.andy@hotmail.com';
-  $scope.password = "password";
+  $scope.data = {
+    value : {
+      username : "",
+      email : "" ,
+      password : "" 
+    }
+  };
 
   $scope.validLogin = function() {
-    $scope.user = $users.get($scope.email, $scope.password, $scope.displayUser());
+    $scope.data = $users.get($scope.email.toLowerCase(), $scope.password, $scope.displayUser());
   };
 
   $scope.displayUser = function() {
+
+    $scope.$watch(function(){
+      console.log($scope.data);
+      if($scope.data.value.hasOwnProperty('username') === true){
+        $location.path('/');
+        localStorage['username'] = $scope.data.value.username;
+        console.log("Logged in as " + $scope.loggedIn);
+      } else if ($scope.data.value === 'error') {
+        $scope.loginForm.submitted = true;
+        localStorage['username'] = undefined;
+      }
+    }, true);
   }
 
   // $scope.login = function(){
@@ -177,37 +195,6 @@ cMLGApp.directive('homepage', ['$location', function($location){
     transclude: true,
     templateUrl: 'home.ejs', 
   }
-}]);
-angular.module('cMLGApp').directive('loginDirective', ["$timeout", "$q", "$http", function($timeout, $q, $http) {
-  return {
-    retrict: 'AE',
-    require: 'ngModel',
-    link: function(scope, elm, attr, model) {
-      userExists = function() {
-        var username = scope.loginForm.username;
-        var password = scope.loginForm.password;
-        var url = '/db/search/users/login/' + email + '/' + password +'?callback=JSON_CALLBACK';
-
-        return $http.get(url)
-          .then(function(res) {
-            // Connected to LoL API to confirm summoner actually exists.
-            if (res.status == 200) {
-              // Successful connection to routes and have data returned.  
-              if (res != "") {
-                // If returned data contains a summoner's information.
-                console.log("success: " + res);
-              } else if (res.data.hasOwnProperty('status') && res.data.status.status_code == 404) {
-                // If returned data shows that the summoner is not found.
-                console.log('failed');
-              }
-            }
-          }, function(res) {
-            // Unable to connect to LoL API to verify summoner name.
-                console.log('failed');
-          });
-      };
-    }
-  };
 }]);
 var cMLGApp = angular.module('cMLGApp');
 
@@ -348,17 +335,25 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
 
       $http.get(url).then(function(res) {
         // success.
-        deferred.resolve(res)
+        console.log(res.data);
+        if(res.data.hasOwnProperty('username') === true){
+          if(password === res.data.password){
+            deferred.resolve(res.data);
+          }
+        } else {
+          deferred.resolve('error');
+        }
+
         if (callback) {
           callback;
         }
+        
       }).then(function(res) {
         // fail.
-
+        deferred.resolve(res);
       }).finally(function() {
         // do this regardless of success/fail.
       })
-
       return deferred.promise.$$state;
     },
 

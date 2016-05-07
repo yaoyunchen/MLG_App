@@ -10,17 +10,25 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
 
       $http.get(url).then(function(res) {
         // success.
-        deferred.resolve(res)
+        console.log(res.data);
+        if(res.data.hasOwnProperty('username') === true){
+          if(password === res.data.password){
+            deferred.resolve(res.data);
+          }
+        } else {
+          deferred.resolve('error');
+        }
+
         if (callback) {
           callback;
         }
+        
       }).then(function(res) {
         // fail.
-
+        deferred.resolve(res);
       }).finally(function() {
         // do this regardless of success/fail.
       })
-
       return deferred.promise.$$state;
     },
 
