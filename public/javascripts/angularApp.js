@@ -2,7 +2,7 @@ var cMLGApp = angular.module('cMLGApp', ['ngRoute', 'ngAnimate']);
 
 const JSONCALLBACK = '?callback=JSON_CALLBACK';
 
-cMLGApp.config(function($routeProvider){
+cMLGApp.config(function($routeProvider) {
   $routeProvider
   //Homepage
   .when('/', {

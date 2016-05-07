@@ -5,22 +5,23 @@ angular.module('cMLGApp').directive('signup', function($timeout, $q, $http) {
     link: function(scope, elm, attr, model) {
       model.$asyncValidators.summonerRegistered = function() {
         scope.loading = true;
-
-        return $http.get('test.json')
+        return $http.get('/db/search/users/' + scope.signupForm.signupName.$$rawModelValue + JSONCALLBACK, {timeout: 5000})
           .then(function(res) {
             if (res.status == 200) {
-              if (res.data === true) {
+              if (res.data.rowCount != 0) {
                 // Summoner registered in our database.
                 scope.summoner = {};
 
-                model.$setValidity('summonerRegistered', false);
-
+                scope.userExists = true;
                 scope.hideImgPane = true;
+                scope.setIcon = -1;
+
                 $timeout(function() {
                   scope.hideInfoPane = true;
                 }, 250)
-              } else if (res.data === false) {
+              } else {
                 // Summoner is not registered, check if the name entered is actual summoner name.
+                scope.userExists = false;
                 summonerExists();
               }
             }
@@ -59,6 +60,8 @@ angular.module('cMLGApp').directive('signup', function($timeout, $q, $http) {
                 model.$setValidity('summonerExists', false);
                 
                 scope.hideImgPane = true;
+                scope.setIcon = -1;
+
                 $timeout(function() {
                   scope.hideInfoPane = true;
                 }, 250)

@@ -2,7 +2,7 @@ var cMLGApp = angular.module('cMLGApp', ['ngRoute', 'ngAnimate']);
 
 const JSONCALLBACK = '?callback=JSON_CALLBACK';
 
-cMLGApp.config(["$routeProvider", function($routeProvider){
+cMLGApp.config(["$routeProvider", function($routeProvider) {
   $routeProvider
   //Homepage
   .when('/', {
@@ -69,9 +69,6 @@ angular.module('cMLGApp').controller('loginController', ['$scope', '$location', 
   };
 
   $scope.displayUser = function() {
-
-    console.log('here');
-    console.log($scope.user);
   }
 
   // $scope.login = function(){
@@ -127,28 +124,29 @@ angular.module('cMLGApp').controller('myMatchController', ['$scope', function($s
       };
 }]);
 
-angular.module('cMLGApp').controller('signupController', ['$scope', function($scope) {
+angular.module('cMLGApp').controller('signupController', ['$scope', '$users', function($scope, $users) {
   $scope.pageClass = "page-signup";
   
   $scope.loading = false;
   $scope.hideInfoPane = true;
   $scope.hideImgPane = true;
 
+  $scope.userExists
   $scope.summoner = {};
   $scope.icons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   $scope.setIcon = -1;
-
-  $scope.generateIcon = function() {
-    if ($scope.setIcon == -1) {
-      $scope.setIcon = $scope.icons[Math.floor(Math.random() * $scope.icons.length)];
-    }
-  };
 
   $scope.createUser = function() {
     console.log('User data should be verified and saved to database now.')
 
     $scope.generateIcon();
     $scope.hideImgPane = false;
+  };
+  
+  $scope.generateIcon = function() {
+    if ($scope.setIcon == -1) {
+      $scope.setIcon = $scope.icons[Math.floor(Math.random() * $scope.icons.length)];
+    }
   };
 
 }]);
@@ -188,7 +186,7 @@ angular.module('cMLGApp').directive('loginDirective', ["$timeout", "$q", "$http"
       userExists = function() {
         var username = scope.loginForm.username;
         var password = scope.loginForm.password;
-        var url = '/searchdatabase/' + username + '/' + password +'?callback=JSON_CALLBACK';
+        var url = '/db/search/users/login/' + email + '/' + password +'?callback=JSON_CALLBACK';
 
         return $http.get(url)
           .then(function(res) {
@@ -228,22 +226,23 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
     link: function(scope, elm, attr, model) {
       model.$asyncValidators.summonerRegistered = function() {
         scope.loading = true;
-
-        return $http.get('test.json')
+        return $http.get('/db/search/users/' + scope.signupForm.signupName.$$rawModelValue + JSONCALLBACK, {timeout: 5000})
           .then(function(res) {
             if (res.status == 200) {
-              if (res.data === true) {
+              if (res.data.rowCount != 0) {
                 // Summoner registered in our database.
                 scope.summoner = {};
 
-                model.$setValidity('summonerRegistered', false);
-
+                scope.userExists = true;
                 scope.hideImgPane = true;
+                scope.setIcon = -1;
+
                 $timeout(function() {
                   scope.hideInfoPane = true;
                 }, 250)
-              } else if (res.data === false) {
+              } else {
                 // Summoner is not registered, check if the name entered is actual summoner name.
+                scope.userExists = false;
                 summonerExists();
               }
             }
@@ -282,6 +281,8 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
                 model.$setValidity('summonerExists', false);
                 
                 scope.hideImgPane = true;
+                scope.setIcon = -1;
+
                 $timeout(function() {
                   scope.hideInfoPane = true;
                 }, 250)
@@ -343,11 +344,14 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
     get: function(email, password, callback) {
       var deferred = $q.defer();
 
-      var url = '/searchdatabase/' + email + '/' + password + JSONCALLBACK;
+      var url = '/db/search/users/login/' + email + '/' + password + JSONCALLBACK;
 
       $http.get(url).then(function(res) {
         // success.
         deferred.resolve(res)
+        if (callback) {
+          callback;
+        }
       }).then(function(res) {
         // fail.
 
@@ -355,9 +359,29 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
         // do this regardless of success/fail.
       })
 
-      if (callback) {
-        callback;
-      }
+      return deferred.promise.$$state;
+    },
+
+    checkUsername: function(username) {
+
+      // console.log(username)
+      var deferred = $q.defer();
+
+      var url = '/db/search/users/' + username + JSONCALLBACK;
+
+      $http.get(url).then(function(res) {
+        // success.
+        console.log(res)
+        deferred.resolve(res)
+        if (callback) {
+          callback;
+        }
+      }).then(function(res) {
+        // fail.
+
+      }).finally(function() {
+        // do this regardless of success/fail.
+      })
 
       return deferred.promise.$$state;
     }

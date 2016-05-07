@@ -11,9 +11,6 @@ angular.module('cMLGApp').controller('loginController', ['$scope', '$location', 
   };
 
   $scope.displayUser = function() {
-
-    console.log('here');
-    console.log($scope.user);
   }
 
   // $scope.login = function(){

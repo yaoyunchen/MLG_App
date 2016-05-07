@@ -41,7 +41,7 @@
           Checking if summoner is registered...
         </small>
       </span>
-      <span ng-if="signupForm.$error.summonerRegistered && signupForm.signupName.$$rawModelValue != ''"> 
+      <span ng-if="userExists === true && signupForm.signupName.$$rawModelValue != ''"> 
         <small class="text-muted">
           Summoner already registered.
         </small>

@@ -6,7 +6,7 @@ angular.module('cMLGApp').directive('loginDirective', function($timeout, $q, $ht
       userExists = function() {
         var username = scope.loginForm.username;
         var password = scope.loginForm.password;
-        var url = '/searchdatabase/' + username + '/' + password +'?callback=JSON_CALLBACK';
+        var url = '/db/search/users/login/' + email + '/' + password +'?callback=JSON_CALLBACK';
 
         return $http.get(url)
           .then(function(res) {
