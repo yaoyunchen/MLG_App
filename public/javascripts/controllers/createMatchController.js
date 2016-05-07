@@ -59,7 +59,7 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champ
     }
   }
   $scope.createMatchRequest = function() {
-    $matchFactory.post(localStorage['username'], $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+    $matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
   }
 
 }]);

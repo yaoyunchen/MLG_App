@@ -62,7 +62,13 @@ router.get('/db/search/users/login/:email/:password', function(req, res) {
       // handle an error from the query
       if(handleError(err)) return;
       done();
-      res.json(result);
+      res.writeHead(200, {'content-type': 'text/plain'});
+      if(result.rows !== undefined){
+        var results = JSON.stringify(result.rows[0]);
+        res.end(results);
+      } else {
+        res.end('error');
+      }
     });
   });
 });
