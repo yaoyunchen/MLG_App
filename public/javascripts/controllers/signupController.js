@@ -10,7 +10,7 @@ angular.module('cMLGApp').controller('signupController', ['$scope', '$users', '$
 
   $scope.summoner = {};
   $scope.icons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  $scope.setIcon = -1;
+  $scope.setIcon;
 
   $scope.go = function(path) {
     $location.path(path);
@@ -87,10 +87,10 @@ angular.module('cMLGApp').controller('signupController', ['$scope', '$users', '$
   };
   
   $scope.generateIcon = function() {
-    if ($scope.setIcon == -1) {
+    if ($scope.setIcon === undefined) {
       $scope.setIcon = $scope.icons[Math.floor(Math.random() * $scope.icons.length)];
       if ($scope.setIcon == $scope.summoner.icon) {
-        $scope.setIcon = -1;
+        $scope.setIcon = undefined;
         $scope.generateIcon();
       }
     }

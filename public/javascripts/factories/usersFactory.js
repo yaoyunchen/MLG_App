@@ -10,25 +10,25 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
 
       $http.get(url).then(function(res) {
         // success.
-        console.log(res.data);
-        if(res.data.hasOwnProperty('username') === true){
-          if(password === res.data.password){
-            deferred.resolve(res.data);
+        if (res.data === undefined || res.data == '') {
+          deferred.resolve({error: 'Email not registered.'});
+        } else if (res.data != undefined && res.data != '') {
+          if (password === res.data.password) {
+            var user = {
+              username: res.data.username, 
+              user_id: res.data.id
+            }
+            deferred.resolve(user)
+          } else {
+            deferred.resolve({error: 'Incorrect password.'});
           }
-        } else {
-          deferred.resolve('error');
         }
-
-        if (callback) {
-          callback;
-        }
-        
-      }).then(function(res) {
-        // fail.
-        deferred.resolve(res);
-      }).finally(function() {
-        // do this regardless of success/fail.
       })
+
+      if (callback) {
+        callback();
+      }
+
       return deferred.promise.$$state;
     },
 
@@ -37,16 +37,10 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
 
       var url = '/db/search/users/' + username + JSONCALLBACK;
       $http.get(url).then(function(res) {
-        // success.
-
         deferred.resolve(res)
         if (callback) {
           callback;
         }
-      }).then(function(res) {
-        // fail.
-      }).finally(function() {
-        // do this regardless of success/fail.
       })
 
       return deferred.promise.$$state;
@@ -56,7 +50,10 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
       var url = '/db/post/user/' + data + JSONCALLBACK;
       $http.post(url).then(function(res) {
         // success
-        return res;
+        if (res.data.hasOwnProperty('rows')) {
+          localStorage['username'] = res.data.rows[0].username;
+          localStorage['user_id'] = res.data.rows[0].id;
+        }
       })
     }
   };

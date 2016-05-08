@@ -1,9 +1,9 @@
-.ng-hide-remove {
+.signup-child.ng-hide-remove {
   animation:  0.5s slideInUp ease-in;
   z-index:    3000;
 }
 
-.ng-hide-add {
+.signup-child.ng-hide-add {
   animation:  0.5s slideOutDown ease-in; 
   z-index:    4000;
 }

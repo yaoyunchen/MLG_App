@@ -15,7 +15,7 @@ angular.module('cMLGApp').directive('signup', function($timeout, $q, $http) {
                 scope.userExists = true;
                 scope.summonerExists = true;
                 scope.hideImgPane = true;
-                scope.setIcon = -1;
+                scope.setIcon = undefined;
                 scope.user_id = res.data.rows[0].id;
 
                 $timeout(function() {
@@ -65,7 +65,7 @@ angular.module('cMLGApp').directive('signup', function($timeout, $q, $http) {
                 model.$setValidity('summonerExists', false);
                 
                 scope.hideImgPane = true;
-                scope.setIcon = -1;
+                scope.setIcon = undefined;
 
                 $timeout(function() {
                   scope.hideInfoPane = true;

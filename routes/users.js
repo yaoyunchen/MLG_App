@@ -57,7 +57,7 @@ router.get('/db/search/users/login/:email/:password', function(req, res) {
     // handle an error from the connection
     if(handleError(err)) return;
 
-    var query = "SELECT username, email, password FROM Users WHERE email='" + email + "'"
+    var query = "SELECT id, username, email, password FROM Users WHERE email='" + email + "'"
     client.query(query, function(err, result) {
       // handle an error from the query
       if(handleError(err)) return;
@@ -115,13 +115,13 @@ router.post('/db/post/user/:data', function(req, res) {
     if(handleError(err)) return;
 
     var columns = '(username, email, user_icon, password, summoner_id, summoner_icon, verification, mlg_points, mlg_tier, logined_today, friendlist) ';
-    var query = 'INSERT INTO USERS ' + columns + 'VALUES (' + req.params.data + ');';
+    var query = 'INSERT INTO USERS ' + columns + 'VALUES (' + req.params.data + ') RETURNING id, username;';
 
     client.query(query, function(err, result) {
       // handle an error from the query
       if(handleError(err)) return;
       done();
-      res.end('User saved.');
+      res.json(result);
     });
   })
 })

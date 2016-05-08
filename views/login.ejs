@@ -1,11 +1,9 @@
-<div class="row" ng-controller="loginController">
-  <div class="col-title">
-    <h3>
-      =This is the login page=
-    </h3>
+<div class="row row-first" ng-controller="loginController">
+  <div class="col-sm-12 col-title">
+    <h1>Log In</h1>
   </div>
   <br/>
-  <div> 
+  <div class="col-sm-12"> 
     <form role="form" class="form" name="loginForm" ng-submit="validLogin()">
       <p class="alert-msg" ng-show="(loginForm.username.$invalid || loginForm.password.$dirty) && loginForm.submitted">
         Invalid Username and/or Password
@@ -35,7 +33,8 @@
       </div>
     </form>
   </div>
-
-  {{data.rows}};
+  <div class="col-sm-12 login-error">
+    <p>{{ errorMsg }}</p>
+  </div>
 </div>
 
