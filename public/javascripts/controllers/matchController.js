@@ -31,7 +31,6 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
 
   $scope.browseChamps = false;
 
-
   $scope.championData = $champions.get();
 
   $scope.validChampion = function() {
@@ -64,8 +63,8 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
 
 
 
-    // $matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
-    // $matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+    // $matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
+    // $matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
     // $location.path('/');
   }
 

@@ -52,3 +52,10 @@ img.img-signup-icon:hover {
   max-width:100%;
   max-height:100%;
 }
+
+.pending-match-rows {
+  margin-bottom: 10px;
+  background-color: yellow;
+  border-width: 2px;
+  border-style: solid;
+}

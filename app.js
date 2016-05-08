@@ -60,45 +60,53 @@ app.use(function(err, req, res, next) {
   });
 });
 
-module.exports = app;
 
-
-// //providing database data
+///////////////////////////////////////
+//setting up period database checking//
+///////////////////////////////////////
+//providing database data
 // var http = require('http');
 // var pg = require('pg');
 // var dbKey = require('./env.js');
 // var conString = dbKey();
+// //for debugging only
+// var counter = 0;
+// setInterval(function() {
+//   //for debugging only
+//   counter ++;
+//   console.log('the counter is: ' + counter);
 
-// var checkUsername = function(req, res) {
-//   // get a pg client from the connection pool
+//   //code
+//   var username = counter;
+//   var champion = 1;
+//   var bet = 1;
+//   var betType = 1;
+//   var matchType = 1;
 //   pg.connect(conString, function(err, client, done) {
-//     var handleError = function(err) {
-//       // no error occurred, continue with the request
-//       if(!err) return false;
-//       // An error occurred, remove the client from the connection pool.
-//       if(client){
-//         done(client);
-//       }
-//       res.writeHead(500, {'content-type': 'text/plain'});
-//       res.end('An error occurred');
-//       return true;
-//     };
-//     // handle an error from the connection
-//     if(handleError(err)) return;
-
-//     client.query('SELECT * FROM Users', function(err, result) {
-//       // handle an error from the query
-//       if(handleError(err)) return;
+//     if(err) {
+//       return console.error('error fetching client from pool', err);
+//     }
+//     //creating Users table
+//     var query = "INSERT INTO MatchRequests (user_id, champion_id, match_type, status, bet, bettype) \
+//     VALUES ('"+ username + "'," + champion + "," + matchType + ",0," + bet + "," + betType + ");";
+    
+//     client.query(query, function(err, result) {
 //       done();
-//       console.log('The result is: ' + result.rows[0].username + ":" + result.rows[0].email);
-//       res.writeHead(200, {'content-type': 'text/plain'});
-//       res.end('The result is: ' + result.rows[0].username + ":" + result.rows[0].email);
+//       if(err) {
+//         return console.error('error running query', err);
+//       }
+//       console.log("done updating Users Table x" + counter);
 //     });
 //   });
-// }
-// var server = http.createServer(checkUsername);
-// server.listen(3001);
 
+// }, 5000); // every 5 seconds
+
+///////////////////////////////////////
+            //END HERE//
+///////////////////////////////////////
+
+
+module.exports = app;
 
 app.listen(8888, function(){
   console.log('ready on port 8888');

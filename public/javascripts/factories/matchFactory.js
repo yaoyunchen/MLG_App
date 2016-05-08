@@ -3,8 +3,9 @@ var cMLGApp = angular.module('cMLGApp');
 cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
 
   return {
-    post: function(username, champion, bet, betType, matchType) {
-      var url = '/db/post/match_request/'+username+'/'+champion+'/'+bet+'/'+betType+'/'+matchType;
+    //create match request
+    post: function(username, champion_id, champion_key, bet, betType, matchType) {
+      var url = '/db/post/match_request/'+username+'/'+champion_id+'/'+champion_key+'/'+bet+'/'+betType+'/'+matchType;
       $http.post(url).then(function(res) {
         //success
       }).then(function(res) {
@@ -13,6 +14,39 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
       }).finally(function() {
         // do this regardless of success/fail.
       })
+    },
+    //get all active match requests
+    get: function(user_id, callback) {
+      var deferred = $q.defer();
+      var url = '/db/get/match_request/active/' + user_id + '?callback=JSON_CALLBACK';
+      $http.get(url).then(function(res) {
+        //success
+        var data = {};
+        var result = res.data.rows;
+        for (var key in result) {
+          if (!result.hasOwnProperty(key)) continue;
+          var obj = result[key];
+          //getting champion image url
+          obj.image = 'http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/'+obj.champion_key+'.png'
+          //converting status int into str
+          if(obj.status === 1){
+            obj.status_str = 'Pending';
+          }
+          //converting bet type int into str
+          if(obj.bettype === 0){
+            obj.bettype_str = 'Close Match';
+          } else if(obj.bettype === 1){
+            obj.bettype_str = 'Big Win';
+          }
+        };
+
+        deferred.resolve(res);
+      })
+
+      if (callback) {
+        callback();
+      }
+      return deferred.promise.$$state;
     }
   };
 }]);

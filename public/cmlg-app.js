@@ -45,6 +45,17 @@ cMLGApp.config(["$routeProvider", function($routeProvider) {
     templateUrl : 'match/create.ejs',
     controller  : 'matchCreateController'
   })
+  .when('/match/pending', {
+    // resolve: {
+    //   "check": function($location, $rootScope){
+    //     if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
+    //       $location.path('/login');
+    //     }
+    //   }
+    // },
+    templateUrl : 'match/pending.ejs',
+    controller  : 'matchPendingController'
+  })
   .when('/user/', {
     resolve: {
       "check": ["$location", "$rootScope", function($location, $rootScope){
@@ -165,7 +176,6 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
 
   $scope.browseChamps = false;
 
-
   $scope.championData = $champions.get();
 
   $scope.validChampion = function() {
@@ -198,8 +208,8 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
 
 
 
-    // $matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
-    // $matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+    // $matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
+    // $matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
     // $location.path('/');
   }
 
@@ -220,6 +230,25 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
 
 }]);
 
+angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$location', '$users', '$matchFactory', '$timeout', function($scope, $location, $users, $matchFactory, $timeout) {
+
+  $scope.pageClass = "page-match-pending";
+
+  $scope.showMatchRequests = function() {
+    $timeout(function(){
+      if($scope.data !== undefined){
+        if($scope.data.value != undefined){
+          $scope.matchRequestList = $scope.data.value.data.rows
+        }
+      }
+    }, 200);
+
+  }
+
+  $scope.data = $matchFactory.get(localStorage['user_id'], $scope.showMatchRequests());
+
+  console.log(localStorage['user_id']);
+}]);
 angular.module('cMLGApp').controller('signupController', ['$scope', '$users', '$location', function($scope, $users, $location) {
   $scope.pageClass = "page-signup";
   
@@ -537,8 +566,9 @@ var cMLGApp = angular.module('cMLGApp');
 cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
 
   return {
-    post: function(username, champion, bet, betType, matchType) {
-      var url = '/db/post/match_request/'+username+'/'+champion+'/'+bet+'/'+betType+'/'+matchType;
+    //create match request
+    post: function(username, champion_id, champion_key, bet, betType, matchType) {
+      var url = '/db/post/match_request/'+username+'/'+champion_id+'/'+champion_key+'/'+bet+'/'+betType+'/'+matchType;
       $http.post(url).then(function(res) {
         //success
       }).then(function(res) {
@@ -547,6 +577,39 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
       }).finally(function() {
         // do this regardless of success/fail.
       })
+    },
+    //get all active match requests
+    get: function(user_id, callback) {
+      var deferred = $q.defer();
+      var url = '/db/get/match_request/active/' + user_id + '?callback=JSON_CALLBACK';
+      $http.get(url).then(function(res) {
+        //success
+        var data = {};
+        var result = res.data.rows;
+        for (var key in result) {
+          if (!result.hasOwnProperty(key)) continue;
+          var obj = result[key];
+          //getting champion image url
+          obj.image = 'http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/'+obj.champion_key+'.png'
+          //converting status int into str
+          if(obj.status === 1){
+            obj.status_str = 'Pending';
+          }
+          //converting bet type int into str
+          if(obj.bettype === 0){
+            obj.bettype_str = 'Close Match';
+          } else if(obj.bettype === 1){
+            obj.bettype_str = 'Big Win';
+          }
+        };
+
+        deferred.resolve(res);
+      })
+
+      if (callback) {
+        callback();
+      }
+      return deferred.promise.$$state;
     }
   };
 }]);
