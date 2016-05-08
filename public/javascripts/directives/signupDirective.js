@@ -16,6 +16,7 @@ angular.module('cMLGApp').directive('signup', function($timeout, $q, $http) {
                 scope.summonerExists = true;
                 scope.hideImgPane = true;
                 scope.setIcon = -1;
+                scope.user_id = res.data.rows[0].id;
 
                 $timeout(function() {
                   scope.hideInfoPane = true;
@@ -24,6 +25,8 @@ angular.module('cMLGApp').directive('signup', function($timeout, $q, $http) {
                 // Summoner is not registered, check if the name entered is actual summoner name.
                 scope.userExists = false;
                 summonerExists();
+                console.log('user not registered');
+                console.log(res.data);
               }
             }
           }, function(res){

@@ -36,3 +36,19 @@ a {
 .alert-msg {
   color: red;
 }
+
+img.img-signup-icon:hover {
+  -webkit-filter:   brightness(200%); 
+  filter:           brightness(200%);
+}
+
+.selectChamp {
+  height: 60px;
+  width: 60px;
+  float: left;
+}
+
+.selectChampIcon {
+  max-width:100%;
+  max-height:100%;
+}

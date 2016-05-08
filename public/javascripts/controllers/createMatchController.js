@@ -1,4 +1,4 @@
-angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champions', '$matchFactory', function($scope, $champions, $matchFactory) {
+angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champions', '$matchFactory', '$location', function($scope, $champions, $matchFactory, $location) {
   $scope.pageClass = "page-createMatch";
   $scope.betType = "closeTrue";
   
@@ -14,6 +14,7 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champ
 
   $scope.loading = false;
   $scope.userExists;
+  $scope.user_id = {};
   $scope.summoner = {};
   $scope.matchType = 1;
 
@@ -28,9 +29,10 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champ
     image : {}
   };
 
+  $scope.browseChamps = false;
+
+
   $scope.championData = $champions.get();
-  console.log('getting Champion');
-  console.log($scope.championData);
 
   $scope.validChampion = function() {
     $scope.submittedChampion = true;
@@ -60,6 +62,23 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champ
   }
   $scope.createMatchRequest = function() {
     $matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+    $matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+    $location.path('/');
+  }
+
+  $scope.setBrowseChamps = function() {
+    $scope.browseChamps = true;
+  }
+
+  $scope.back = function() {
+    $location.path('/');
+  }
+
+  $scope.selectChamp = function(name) {
+    $scope.champion = name;
+    console.log(name);
+    $scope.browseChamps = false;
+    $scope.validChampion();
   }
 
 }]);

@@ -40,7 +40,7 @@ cMLGApp.config(["$routeProvider", function($routeProvider) {
     controller  : 'myMatchController'
   });
 }]);
-angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champions', '$matchFactory', function($scope, $champions, $matchFactory) {
+angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champions', '$matchFactory', '$location', function($scope, $champions, $matchFactory, $location) {
   $scope.pageClass = "page-createMatch";
   $scope.betType = "closeTrue";
   
@@ -56,6 +56,7 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champ
 
   $scope.loading = false;
   $scope.userExists;
+  $scope.user_id = {};
   $scope.summoner = {};
   $scope.matchType = 1;
 
@@ -70,9 +71,10 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champ
     image : {}
   };
 
+  $scope.browseChamps = false;
+
+
   $scope.championData = $champions.get();
-  console.log('getting Champion');
-  console.log($scope.championData);
 
   $scope.validChampion = function() {
     $scope.submittedChampion = true;
@@ -102,6 +104,23 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champ
   }
   $scope.createMatchRequest = function() {
     $matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+    $matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+    $location.path('/');
+  }
+
+  $scope.setBrowseChamps = function() {
+    $scope.browseChamps = true;
+  }
+
+  $scope.back = function() {
+    $location.path('/');
+  }
+
+  $scope.selectChamp = function(name) {
+    $scope.champion = name;
+    console.log(name);
+    $scope.browseChamps = false;
+    $scope.validChampion();
   }
 
 }]);
@@ -311,6 +330,27 @@ cMLGApp.controller('summonerController', ['$scope', '$summoner', function($scope
     }
   }
 }]);
+angular.module('cMLGApp').directive('appendIcon',["$timeout", "$q", "$http", "$compile", function($timeout, $q, $http, $compile) {
+  return {
+    restrict: 'A',
+    link: function(scope, elem, attr, createMatchController) {
+      // Sets all tabs as inactive when they begin.
+      $timeout(function() {
+        scope.selectChamp;
+        var ListOfChamp = scope.championData.value.data.data;
+        for (var champ in ListOfChamp) {
+          var url = 'http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/' + ListOfChamp[champ].image.full;
+          var thisDiv = angular.element(document).find('#appendIcon');
+          var template = "<div class='selectChamp'><img class='img-signup-icon selectChampIcon' ng-src='"+url+"' ng-click=\"selectChamp('"+ListOfChamp[champ].key+"')\"/></div>";
+          var linkFn = $compile(template);
+          var content = linkFn(scope);
+
+          thisDiv.append(content);
+        }
+      }, 1000);
+    }
+  }
+}]);
 var cMLGApp = angular.module('cMLGApp');
 
 cMLGApp.directive('homepage', ['$location', function($location){
@@ -320,85 +360,6 @@ cMLGApp.directive('homepage', ['$location', function($location){
     templateUrl: 'home.ejs', 
   }
 }]);
-angular.module('cMLGApp').directive('invitePlayerDirective', ["$timeout", "$q", "$http", function($timeout, $q, $http) {
-  return {
-    retrict: 'AE',
-    require: 'ngModel',
-    link: function(scope, elm, attr, model) {
-      model.$asyncValidators.summonerRegistered = function() {
-        scope.loading = true;
-        console.log('summonerRegistered!');
-        return $http.get('/db/search/users/' + scope.createMatchForm.username.$$rawModelValue + JSONCALLBACK, {timeout: 5000})
-          .then(function(res) {
-            console.log('inside this function');
-            if (res.status == 200) {
-              if (res.data.rowCount != 0) {
-                // Summoner registered in our database.
-                scope.summoner = {};
-
-                scope.userExists = true;
-                console.log('user exists');
-                $timeout(function() {
-                  scope.hideInfoPane = true;
-                }, 250)
-              } else {
-                // Summoner is not registered, check if the name entered is actual summoner name.
-                scope.userExists = false;
-                console.log('user does not exists');
-              }
-            }
-          }, function(res){
-            // Unable to connect to users database to verify summoner name.
-            model.$setValidity('connection', false);
-          }).finally(function() {
-            scope.loading = false;
-          });
-      };
-
-      summonerExists = function() {
-        var region = 'na';
-        var name = scope.createMatchForm.username.$$rawModelValue;
-        var url = '/search/' + region + '/' + name + '?callback=JSON_CALLBACK';
-
-        return $http.get(url)
-          .then(function(res) {
-            // Connected to LoL API to confirm summoner actually exists.
-            if (res.status == 200) {
-              // Successful connection to routes and have data returned.  
-              if (res.data.hasOwnProperty(name)) {
-                // If returned data contains a summoner's information.
-                scope.summoner.name = res.data[name].name;
-                scope.summoner.id = res.data[name].id;
-                scope.summoner.icon = res.data[name].profileIconId;
-
-                model.$setValidity('summonerExists', true);
-                
-                scope.hideInfoPane = false;
-                
-              } else if (res.data.hasOwnProperty('status') && res.data.status.status_code == 404) {
-                // If returned data shows that the summoner is not found.
-                scope.summoner = {};
-
-                model.$setValidity('summonerExists', false);
-                
-                scope.hideImgPane = true;
-                scope.setIcon = -1;
-
-                $timeout(function() {
-                  scope.hideInfoPane = true;
-                }, 250)
-              }
-            }
-          }, function(res) {
-            // Unable to connect to LoL API to verify summoner name.
-            model.$setValidity('connection', false);
-          });
-      };
-
-    }
-  };
-}]);
-
 var cMLGApp = angular.module('cMLGApp');
 
 cMLGApp.directive('navbar', function() {
@@ -427,6 +388,7 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
                 scope.summonerExists = true;
                 scope.hideImgPane = true;
                 scope.setIcon = -1;
+                scope.user_id = res.data.rows[0].id;
 
                 $timeout(function() {
                   scope.hideInfoPane = true;
@@ -435,6 +397,8 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
                 // Summoner is not registered, check if the name entered is actual summoner name.
                 scope.userExists = false;
                 summonerExists();
+                console.log('user not registered');
+                console.log(res.data);
               }
             }
           }, function(res){
