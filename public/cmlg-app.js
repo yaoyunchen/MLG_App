@@ -2,6 +2,21 @@ var cMLGApp = angular.module('cMLGApp', ['ngRoute', 'ngAnimate']);
 
 const JSONCALLBACK = '?callback=JSON_CALLBACK';
 
+cMLGApp.run(["$rootScope", function($rootScope) {
+  $rootScope.username;
+  $rootScope.user_id;
+  $rootScope.loggedIn;
+  $rootScope.updateUser = function() {
+    $rootScope.username = localStorage['username'];
+    $rootScope.user_id = localStorage['user_id'];
+    if ($rootScope.username === 'undefined' || $rootScope.username == '' || $rootScope.user_id === 'undefined' || $rootScope.user_id == '') {
+      $rootScope.loggedIn = false;
+    } else {
+      $rootScope.loggedIn = true;
+    }
+  }
+}]);
+
 cMLGApp.config(["$routeProvider", function($routeProvider) {
   $routeProvider
   //Homepage
@@ -125,7 +140,7 @@ angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champ
 
 }]);
 
-angular.module('cMLGApp').controller('loginController', ['$scope', '$location', '$users', function($scope, $location, $users) {
+angular.module('cMLGApp').controller('loginController', ['$scope', '$rootScope', '$location', '$users', '$q', function($scope, $rootScope, $location, $users, $q) {
 
   $scope.pageClass = "page-login";
   
@@ -136,43 +151,88 @@ angular.module('cMLGApp').controller('loginController', ['$scope', '$location', 
       password : "" 
     }
   };
+  $scope.errorMsg;
 
+  $scope.updateUser = function() {
+    $rootScope.$watch('loggedIn', function() {
+      $scope.username = $rootScope.username;
+      $scope.user_id = $rootScope.user_id;
+      $scope.loggedIn = $rootScope.loggedIn;
+    }) 
+  }
+ 
   $scope.validLogin = function() {
-    $scope.data = $users.get($scope.email.toLowerCase(), $scope.password, $scope.displayUser());
+    $scope.data = $users.get($scope.email.toLowerCase(), $scope.password, function() {
+      $scope.$watch('data', function() {
+        if ($scope.data.hasOwnProperty('value') ) {
+          if ($scope.data.value.hasOwnProperty('error')) {
+            console.log('Login error');
+            $scope.errorMsg = $scope.data.value.error;
+          } else {
+            console.log('Successful');
+            localStorage['username'] = $scope.data.value.username;
+            localStorage['user_id'] = $scope.data.value.user_id;
+            $rootScope.updateUser();
+            $location.path('/#/');
+          }
+        }
+
+      }, true);
+    })
   };
 
   $scope.displayUser = function() {
     
-    $scope.$watch(function(){
-      console.log($scope.data.value);
-      if($scope.data.value.hasOwnProperty('username') === true){
-        $location.path('/');
-        localStorage['username'] = $scope.data.value.username;
-        localStorage['user_id'] = $scope.data.value.id;
-        console.log("Logged in as " + $scope.loggedIn);
-      } else if ($scope.data.value === 'error') {
-        $scope.loginForm.submitted = true;
-        localStorage['username'] = undefined;
-        localStorage['user_id'] = undefined;
-
+    $scope.$watch(function(oldV, newV) {
+      if ($scope.data.hasOwnProperty('status') && $scope.data.status == 1) {
+        if ($scope.data.value === undefined) {
+          console.log('Incorrect login.');
+        } else if ($scope.data.value.hasOwnProperty('username')) {
+          localStorage['username'] = $scope.data.value.username;
+          localStorage['user_id'] = $scope.data.value.user_id;
+          // $scope.updateUser();
+          $rootScope.updateUser();
+          $location.path('/#/')
+        }
       }
-    }, true);
+    }, true)
   }
 }]);
 
 var cMLGApp = angular.module('cMLGApp');
 
-cMLGApp.controller('mainController', ['$scope', '$location', function($scope, $location){
+cMLGApp.controller('mainController', ['$scope', '$rootScope', '$location', function($scope, $rootScope, $location){
   $scope.pageClass = "page-home";
 
   $scope.$location = $location;
 
-  //checks local storage for logged in
-  var username = localStorage['username'];
-  console.log("you are currently logged in as: " + username);
-  if (username !== undefined){
-    console.log("will set log in here");
+  $scope.updateUser = function() {
+    // $rootScope.updateUser();
+    $rootScope.$watch('loggedIn', function() {
+      $scope.username = $rootScope.username;
+      $scope.user_id = $rootScope.user_id;
+      $scope.loggedIn = $rootScope.loggedIn;
+    }) 
   }
+  $scope.updateUser();
+
+  $scope.userLoggedIn = function() {
+    var status = true;
+    if ($rootScope.username === undefined || $rootScope.username == '') {
+      status = false;
+    }
+    return status;
+  }
+  $scope.userLoggedIn();
+
+  $scope.logout = function() {
+    localStorage['username'] = undefined;
+    localStorage['user_id'] = undefined;
+    $rootScope.updateUser();
+    // $scope.updateUser();
+    $location.path('/');
+  }
+
 
 }]);
 angular.module('cMLGApp').controller('myMatchController', ['$scope', function($scope) {
@@ -204,7 +264,7 @@ angular.module('cMLGApp').controller('signupController', ['$scope', '$users', '$
 
   $scope.summoner = {};
   $scope.icons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  $scope.setIcon = -1;
+  $scope.setIcon;
 
   $scope.go = function(path) {
     $location.path(path);
@@ -281,10 +341,10 @@ angular.module('cMLGApp').controller('signupController', ['$scope', '$users', '$
   };
   
   $scope.generateIcon = function() {
-    if ($scope.setIcon == -1) {
+    if ($scope.setIcon === undefined) {
       $scope.setIcon = $scope.icons[Math.floor(Math.random() * $scope.icons.length)];
       if ($scope.setIcon == $scope.summoner.icon) {
-        $scope.setIcon = -1;
+        $scope.setIcon = undefined;
         $scope.generateIcon();
       }
     }
@@ -367,7 +427,7 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
                 scope.userExists = true;
                 scope.summonerExists = true;
                 scope.hideImgPane = true;
-                scope.setIcon = -1;
+                scope.setIcon = undefined;
                 scope.user_id = res.data.rows[0].id;
 
                 $timeout(function() {
@@ -417,7 +477,7 @@ angular.module('cMLGApp').directive('signup', ["$timeout", "$q", "$http", functi
                 model.$setValidity('summonerExists', false);
                 
                 scope.hideImgPane = true;
-                scope.setIcon = -1;
+                scope.setIcon = undefined;
 
                 $timeout(function() {
                   scope.hideInfoPane = true;
@@ -525,25 +585,25 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
 
       $http.get(url).then(function(res) {
         // success.
-        console.log(res.data);
-        if(res.data.hasOwnProperty('username') === true){
-          if(password === res.data.password){
-            deferred.resolve(res.data);
+        if (res.data === undefined || res.data == '') {
+          deferred.resolve({error: 'Email not registered.'});
+        } else if (res.data != undefined && res.data != '') {
+          if (password === res.data.password) {
+            var user = {
+              username: res.data.username, 
+              user_id: res.data.id
+            }
+            deferred.resolve(user)
+          } else {
+            deferred.resolve({error: 'Incorrect password.'});
           }
-        } else {
-          deferred.resolve('error');
         }
-
-        if (callback) {
-          callback;
-        }
-        
-      }).then(function(res) {
-        // fail.
-        deferred.resolve(res);
-      }).finally(function() {
-        // do this regardless of success/fail.
       })
+
+      if (callback) {
+        callback();
+      }
+
       return deferred.promise.$$state;
     },
 
@@ -552,16 +612,10 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
 
       var url = '/db/search/users/' + username + JSONCALLBACK;
       $http.get(url).then(function(res) {
-        // success.
-
         deferred.resolve(res)
         if (callback) {
           callback;
         }
-      }).then(function(res) {
-        // fail.
-      }).finally(function() {
-        // do this regardless of success/fail.
       })
 
       return deferred.promise.$$state;
@@ -571,7 +625,10 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
       var url = '/db/post/user/' + data + JSONCALLBACK;
       $http.post(url).then(function(res) {
         // success
-        return res;
+        if (res.data.hasOwnProperty('rows')) {
+          localStorage['username'] = res.data.rows[0].username;
+          localStorage['user_id'] = res.data.rows[0].id;
+        }
       })
     }
   };
