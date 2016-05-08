@@ -1,0 +1,171 @@
+<div class="row" ng-controller="matchCreateController">
+  <div class="col-title">
+    <h3>
+      =This is the match creation page=
+    </h3>
+  </div>
+
+  <div class="row" ng-show="(!browseChamps)">
+    <!-- Selecting champions-->
+    <div class="col-sm-6 orm-group floating-label-form-group">
+      <form name="chooseChampionForm" 
+        role="form" 
+        class="form" 
+        novalidate
+      >
+        <label class="col-sm-12 col-title"> =Choose your champion= </label>
+        <input class="form-control" type="text" name="champion" placeholder="Enter Champion Name" ng-model="champion"></input>
+        <div class="col-sm-12 col-title">
+          <button class="btn btn-danger" ng-click="validChampion()" ng-disabled="(champion === Null || champion === '')">Lock In</button>
+          <button class="btn btn-danger" ng-click="setBrowseChamps()">Browse</button>
+        </div>
+        <p class="alert-msg" ng-show="(!championExists && submittedChampion)">
+          Invalid Name, please input a correct name or browse for a champion
+        </p>
+      </form>
+      <div ng-show="(championExists && submittedChampion)">
+        <p>
+          You have Selected: {{selectedChampion.name}}: {{selectedChampion.title}}
+        </p>
+        <img class="img-signup-icon" ng-src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{ selectedChampion.key }}_0.jpg" ng-click="selectChamp()">
+      </div>
+    </div>
+
+    <div class="col-sm-6 match-summoner">
+      <form name="matchInviteForm"
+        role="form"
+        class="form"
+        ng-submit="1"
+        novalidate
+      >
+        <div class="row" style="text-align: center">
+          <div class="col-sm-12">
+            <div class="form-group floating-label-form-group">
+              <label for="summonerName">
+                Summoner Name
+              </label>
+              <input type="text"
+                class="form-control"
+                name="summonerName"
+                placeholder="Summoner Name"
+                ng-model="summonerName"
+                ng-model-options="{updateOn: 'blur'}"
+                create-match
+                required
+              >
+            </div>
+            <span ng-if="matchInviteForm.summonerName.$$rawModelValue === undefined || matchInviteForm.summonerName.$$rawModelValue == ''">
+              <small class="text-muted">
+                Enter your opponent's League of Legends in-game name.
+              </small>
+            </span>
+            <span class="spinner" ng-hide="!loading">
+              <i class="fa fa-spinner fa-pulse fa-1x fa-fw margin-bottom"></i>
+              <span class="sr-only">Loading...</span>
+            </span>
+            <span ng-if="matchInviteForm.$pending.summonerRegistered && matchInviteForm.summonerName.$$rawModelValue != ''"> 
+              <small class="text-muted">
+                Checking if summoner is registered...
+              </small>
+            </span>
+            <span ng-if="userExists  && matchInviteForm.summonerName.$$rawModelValue != ''"> 
+              <small class="text-muted">
+                Summoner OK!
+              </small>
+            </span>
+            <span ng-if="!userExists && userExists != undefined && matchInviteForm.summonerName.$$rawModelValue != ''"> 
+              <small class="text-muted">
+                Summoner does not exist or does not have an account with cMLG!
+              </small>
+            </span>
+          </div>
+        </div>
+
+        <!-- BETS START -->
+        <div class="row" style="text-align: center">
+          <div class="col-sm-12 form-group">
+            <label for="summonerName">
+              Bet Amount
+            </label>
+            <input type="number"
+              class="form-control"
+              name="bet"
+              placeholder="Enter Bet Amount" 
+              ng-model="bet" 
+              ng-min="100" 
+              ng-max="1000" 
+              required 
+            />
+            <br/>
+            <div class="row">
+              <div class="col-sm-6">
+                <input type="button"
+                  class="btn btn-danger"
+                  ng-click="min()"
+                  value="MIN: 100 pts"
+                />
+              </div>
+              <div class="col-sm-6">
+                <input type="button"
+                  class="btn btn-danger"
+                  ng-click="max()"
+                  value="MAX: 1000 pts"
+                />
+              </div>
+            </div>
+            <br/>
+            <small class="text-muted" ng-show="(bet != null)">
+              Betting: ${{bet}}
+            </small>
+          </div>
+        </div>
+        <div class="row" style="text-align: center">
+          <div class="col-sm-6 form-group">
+            <input type="radio" ng-model="betType" value="0">
+            <span class="text-muted">Close Match</span>
+          </div>
+          <div class="col-sm-6 form-group">
+            <input type="radio" ng-model="betType" value="1"> 
+            <span class="text-muted">Big Win</span>
+          </div>
+        </div>
+        <!-- BETS END -->
+
+        <br/>
+        <div class="row" style="text-align: center">
+          <div class="col-sm-12">
+            <button class="btn btn-danger" 
+              type="submit" 
+              ng-click="createMatchRequest()" 
+              ng-disabled="signupForm.$invalid"
+            >
+              Send Invite
+            </button>
+          </div>
+          <div class="col-sm-12">
+            <button class="btn btn-danger" ng-click="back()">Back</button>
+          </div>
+        </div>
+      </form>
+      
+
+    </div>
+  </div>
+  
+
+  <!-- Browse Champion Grid -->
+  <div class="row" ng-show="browseChamps">
+    <div class="col-sm-2"></div>
+    <div class="col-title col-sm-8" >
+      <h3>=Choose Your Champion=</h3>
+      
+      <div id="appendIcon" append-icon>
+      </div>
+    </div>
+    <div class="col-sm-2"></div>
+  </div>
+</div>
+
+
+
+

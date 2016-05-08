@@ -7,6 +7,8 @@ cMLGApp.run(function($rootScope) {
   $rootScope.user_id;
   $rootScope.loggedIn;
   $rootScope.updateUser = function() {
+    localStorage['username'];
+    localStorage['user_id'];
     $rootScope.username = localStorage['username'];
     $rootScope.user_id = localStorage['user_id'];
     if ($rootScope.username === 'undefined' || $rootScope.username == '' || $rootScope.user_id === 'undefined' || $rootScope.user_id == '') {
@@ -32,26 +34,26 @@ cMLGApp.config(function($routeProvider) {
     templateUrl : 'login.ejs',
     controller  : 'loginController'
   })
-  .when('/createMatch', {
+  .when('/match/create', {
     resolve: {
       "check": function($location, $rootScope){
-        if (localStorage['username'] === 'undefined'){
+        if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
           $location.path('/login');
         }
       }
     },
-    templateUrl : 'createMatch.ejs',
-    controller  : 'createMatchController'
+    templateUrl : 'match/create.ejs',
+    controller  : 'matchCreateController'
   })
-  .when('/myMatch', {
+  .when('/user/', {
     resolve: {
       "check": function($location, $rootScope){
-        if (localStorage['username'] === 'undefined'){
+        if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
           $location.path('/login');
         }
       }
     },
-    templateUrl : 'myMatch.ejs',
-    controller  : 'myMatchController'
+    templateUrl : 'user/user.ejs',
+    controller  : 'userController'
   });
 });

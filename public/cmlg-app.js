@@ -7,6 +7,8 @@ cMLGApp.run(["$rootScope", function($rootScope) {
   $rootScope.user_id;
   $rootScope.loggedIn;
   $rootScope.updateUser = function() {
+    localStorage['username'];
+    localStorage['user_id'];
     $rootScope.username = localStorage['username'];
     $rootScope.user_id = localStorage['user_id'];
     if ($rootScope.username === 'undefined' || $rootScope.username == '' || $rootScope.user_id === 'undefined' || $rootScope.user_id == '') {
@@ -32,114 +34,29 @@ cMLGApp.config(["$routeProvider", function($routeProvider) {
     templateUrl : 'login.ejs',
     controller  : 'loginController'
   })
-  .when('/createMatch', {
+  .when('/match/create', {
     resolve: {
       "check": ["$location", "$rootScope", function($location, $rootScope){
-        if (localStorage['username'] === 'undefined'){
+        if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
           $location.path('/login');
         }
       }]
     },
-    templateUrl : 'createMatch.ejs',
-    controller  : 'createMatchController'
+    templateUrl : 'match/create.ejs',
+    controller  : 'matchCreateController'
   })
-  .when('/myMatch', {
+  .when('/user/', {
     resolve: {
       "check": ["$location", "$rootScope", function($location, $rootScope){
-        if (localStorage['username'] === 'undefined'){
+        if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
           $location.path('/login');
         }
       }]
     },
-    templateUrl : 'myMatch.ejs',
-    controller  : 'myMatchController'
+    templateUrl : 'user/user.ejs',
+    controller  : 'userController'
   });
 }]);
-angular.module('cMLGApp').controller('createMatchController', ['$scope', '$champions', '$matchFactory', '$location', function($scope, $champions, $matchFactory, $location) {
-  $scope.pageClass = "page-createMatch";
-  $scope.betType = "closeTrue";
-  
-  $scope.min = function() {
-    $scope.bet = 100;
-    console.log($scope.bet);
-  }
-
-  $scope.max = function() {
-    $scope.bet = 1000;
-    console.log($scope.bet);
-  }
-
-  $scope.loading = false;
-  $scope.userExists;
-  $scope.user_id = {};
-  $scope.summoner = {};
-  $scope.matchType = 1;
-
-  $scope.submittedChampion = false;
-  $scope.championList = {};
-  $scope.championExists;
-  $scope.selectedChampion = {
-    id : {},
-    key : {},
-    name : {},
-    title : {},
-    image : {}
-  };
-
-  $scope.browseChamps = false;
-
-
-  $scope.championData = $champions.get();
-
-  $scope.validChampion = function() {
-    $scope.submittedChampion = true;
-    $scope.championList = $scope.championData.value.data.data;
-    for (var champ in $scope.championList) {
-      // skip loop if the property is from prototype
-      if (!$scope.championList.hasOwnProperty(champ)) continue;
-      var originalName = $scope.championList[champ].name;
-      var normName = originalName.toLowerCase().replace(' ','').replace('\'','');
-      var normChampion = $scope.champion.toLowerCase().replace(' ','').replace('\'','');
-      if (normName === normChampion){
-        $scope.championExists = true;
-        $scope.selectedChampion = {
-          id : $scope.championList[champ].id,
-          key : $scope.championList[champ].key,
-          name : $scope.championList[champ].name,
-          title : $scope.championList[champ].title,
-          image : $scope.championList[champ].image.full
-        };
-        console.log($scope.selectedChampion);
-        break;
-      } else {
-        $scope.championExists = false;
-        $scope.selectedChampion = {};
-      }
-    }
-  }
-  $scope.createMatchRequest = function() {
-    $matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
-    $matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
-    $location.path('/');
-  }
-
-  $scope.setBrowseChamps = function() {
-    $scope.browseChamps = true;
-  }
-
-  $scope.back = function() {
-    $location.path('/');
-  }
-
-  $scope.selectChamp = function(name) {
-    $scope.champion = name;
-    console.log(name);
-    $scope.browseChamps = false;
-    $scope.validChampion();
-  }
-
-}]);
-
 angular.module('cMLGApp').controller('loginController', ['$scope', '$rootScope', '$location', '$users', '$q', function($scope, $rootScope, $location, $users, $q) {
 
   $scope.pageClass = "page-login";
@@ -166,37 +83,17 @@ angular.module('cMLGApp').controller('loginController', ['$scope', '$rootScope',
       $scope.$watch('data', function() {
         if ($scope.data.hasOwnProperty('value') ) {
           if ($scope.data.value.hasOwnProperty('error')) {
-            console.log('Login error');
             $scope.errorMsg = $scope.data.value.error;
           } else {
-            console.log('Successful');
             localStorage['username'] = $scope.data.value.username;
             localStorage['user_id'] = $scope.data.value.user_id;
             $rootScope.updateUser();
-            $location.path('/#/');
+            $location.path('/');
           }
         }
-
       }, true);
     })
   };
-
-  $scope.displayUser = function() {
-    
-    $scope.$watch(function(oldV, newV) {
-      if ($scope.data.hasOwnProperty('status') && $scope.data.status == 1) {
-        if ($scope.data.value === undefined) {
-          console.log('Incorrect login.');
-        } else if ($scope.data.value.hasOwnProperty('username')) {
-          localStorage['username'] = $scope.data.value.username;
-          localStorage['user_id'] = $scope.data.value.user_id;
-          // $scope.updateUser();
-          $rootScope.updateUser();
-          $location.path('/#/')
-        }
-      }
-    }, true)
-  }
 }]);
 
 var cMLGApp = angular.module('cMLGApp');
@@ -235,21 +132,92 @@ cMLGApp.controller('mainController', ['$scope', '$rootScope', '$location', funct
 
 
 }]);
-angular.module('cMLGApp').controller('myMatchController', ['$scope', function($scope) {
-  $scope.pageClass = "page-myMatch";
-        // Configuration settings for the graph.
-      $scope.config = {
-        title: 'title',
-        tooltips: true,
-        labels: true,
-        isAnimate: true
-      };
+angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champions', '$matchFactory', '$location', function($scope, $champions, $matchFactory, $location) {
+  $scope.pageClass = "page-createMatch";
+  $scope.betType = "closeTrue";
+  
+  $scope.min = function() {
+    $scope.bet = 100;
+    console.log($scope.bet);
+  }
 
-      // Data for the graph.
-      $scope.data = {
-        series: ['a','b','c','d'],
-        data: [1,2,3,4]
-      };
+  $scope.max = function() {
+    $scope.bet = 1000;
+    console.log($scope.bet);
+  }
+
+  $scope.loading = false;
+  $scope.userExists;
+  $scope.user_id = {};
+  $scope.user = {};
+  $scope.matchType = 1;
+
+  $scope.submittedChampion = false;
+  $scope.championList = {};
+  $scope.championExists;
+  $scope.selectedChampion = {
+    id : {},
+    key : 'Teemo',
+    name : {},
+    title : {},
+    image : {}
+  };
+
+  $scope.browseChamps = false;
+
+
+  $scope.championData = $champions.get();
+
+  $scope.validChampion = function() {
+    $scope.submittedChampion = true;
+    $scope.championList = $scope.championData.value.data.data;
+    for (var champ in $scope.championList) {
+      // skip loop if the property is from prototype
+      if (!$scope.championList.hasOwnProperty(champ)) continue;
+      var originalName = $scope.championList[champ].name;
+      var normName = originalName.toLowerCase().replace(' ','').replace('\'','');
+      var normChampion = $scope.champion.toLowerCase().replace(' ','').replace('\'','');
+      if (normName === normChampion){
+        $scope.championExists = true;
+        $scope.selectedChampion = {
+          id : $scope.championList[champ].id,
+          key : $scope.championList[champ].key,
+          name : $scope.championList[champ].name,
+          title : $scope.championList[champ].title,
+          image : $scope.championList[champ].image.full
+        };
+        console.log($scope.selectedChampion);
+        break;
+      } else {
+        $scope.championExists = false;
+        $scope.selectedChampion = {};
+      }
+    }
+  }
+  $scope.createMatchRequest = function() {
+
+
+
+    // $matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+    // $matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.bet, $scope.betType, $scope.matchType);
+    // $location.path('/');
+  }
+
+  $scope.setBrowseChamps = function() {
+    $scope.browseChamps = true;
+  }
+
+  $scope.back = function() {
+    $location.path('/');
+  }
+
+  $scope.selectChamp = function(name) {
+    $scope.champion = name;
+    console.log(name);
+    $scope.browseChamps = false;
+    $scope.validChampion();
+  }
+
 }]);
 
 angular.module('cMLGApp').controller('signupController', ['$scope', '$users', '$location', function($scope, $users, $location) {
@@ -370,6 +338,23 @@ cMLGApp.controller('summonerController', ['$scope', '$summoner', function($scope
     }
   }
 }]);
+angular.module('cMLGApp').controller('userController', ['$scope', function($scope) {
+  $scope.pageClass = "page-user";
+        // Configuration settings for the graph.
+      $scope.config = {
+        title: 'title',
+        tooltips: true,
+        labels: true,
+        isAnimate: true
+      };
+
+      // Data for the graph.
+      $scope.data = {
+        series: ['a','b','c','d'],
+        data: [1,2,3,4]
+      };
+}]);
+
 angular.module('cMLGApp').directive('appendIcon',["$timeout", "$q", "$http", "$compile", function($timeout, $q, $http, $compile) {
   return {
     restrict: 'A',
@@ -390,6 +375,37 @@ angular.module('cMLGApp').directive('appendIcon',["$timeout", "$q", "$http", "$c
       }, 1000);
     }
   }
+}]);
+angular.module('cMLGApp').directive('createMatch', ["$timeout", "$q", "$http", function($timeout, $q, $http) {
+  return {
+    retrict: 'AE',
+    require: 'ngModel',
+    link: function(scope, elm, attr, model) {
+      model.$asyncValidators.summonerRegistered = function() {
+        scope.loading = true;
+      return $http.get('/db/search/users/' + scope.matchInviteForm.summonerName.$$rawModelValue + JSONCALLBACK, {timeout: 5000})
+        .then(function(res) {
+          if (res.status == 200) {
+            if (res.data.rowCount != 0) {
+              // Summoner registered in our database.
+              scope.userExists = true;
+              // scope.user_id = res.data.rows[0].id;
+            } else {
+              // Summoner is not registered, check if the name entered is actual summoner name.
+              scope.userExists = false;
+
+              console.log('user not registered');
+            }
+          }
+        }, function(res){
+          // Unable to connect to users database to verify summoner name.
+          model.$setValidity('connection', false);
+        }).finally(function() {
+          scope.loading = false;
+        });
+      };
+    }
+  };
 }]);
 var cMLGApp = angular.module('cMLGApp');
 

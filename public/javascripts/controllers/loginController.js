@@ -24,35 +24,15 @@ angular.module('cMLGApp').controller('loginController', ['$scope', '$rootScope',
       $scope.$watch('data', function() {
         if ($scope.data.hasOwnProperty('value') ) {
           if ($scope.data.value.hasOwnProperty('error')) {
-            console.log('Login error');
             $scope.errorMsg = $scope.data.value.error;
           } else {
-            console.log('Successful');
             localStorage['username'] = $scope.data.value.username;
             localStorage['user_id'] = $scope.data.value.user_id;
             $rootScope.updateUser();
-            $location.path('/#/');
+            $location.path('/');
           }
         }
-
       }, true);
     })
   };
-
-  $scope.displayUser = function() {
-    
-    $scope.$watch(function(oldV, newV) {
-      if ($scope.data.hasOwnProperty('status') && $scope.data.status == 1) {
-        if ($scope.data.value === undefined) {
-          console.log('Incorrect login.');
-        } else if ($scope.data.value.hasOwnProperty('username')) {
-          localStorage['username'] = $scope.data.value.username;
-          localStorage['user_id'] = $scope.data.value.user_id;
-          // $scope.updateUser();
-          $rootScope.updateUser();
-          $location.path('/#/')
-        }
-      }
-    }, true)
-  }
 }]);

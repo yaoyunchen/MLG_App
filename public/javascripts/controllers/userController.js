@@ -1,5 +1,5 @@
-angular.module('cMLGApp').controller('myMatchController', ['$scope', function($scope) {
-  $scope.pageClass = "page-myMatch";
+angular.module('cMLGApp').controller('userController', ['$scope', function($scope) {
+  $scope.pageClass = "page-user";
         // Configuration settings for the graph.
       $scope.config = {
         title: 'title',

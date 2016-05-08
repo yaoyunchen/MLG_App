@@ -20,10 +20,16 @@
         <span class="icon-bar"></span>
       </button>
     </div>
-
     <div class="collapse navbar-collapse" 
       ng-class="!navCollapsed && 'in'"
     >
+      <ul class="nav navbar-left navbar-nav">
+        <li dropdown ng-show="loggedIn">
+          <a href="/#/match/create" ng-click="navCollapsed = !navCollapsed">
+            Create Match
+          </a>
+        </li>
+      </ul>
       <ul class="nav navbar-right navbar-nav">
 <!--         <li dropdown>
           <a href="#summoner" 
