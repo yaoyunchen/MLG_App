@@ -46,13 +46,13 @@ cMLGApp.config(function($routeProvider) {
     controller  : 'matchCreateController'
   })
   .when('/match/pending', {
-    // resolve: {
-    //   "check": function($location, $rootScope){
-    //     if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
-    //       $location.path('/login');
-    //     }
-    //   }
-    // },
+    resolve: {
+      "check": function($location, $rootScope){
+        if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
+          $location.path('/login');
+        }
+      }
+    },
     templateUrl : 'match/pending.ejs',
     controller  : 'matchPendingController'
   })

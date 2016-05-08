@@ -14,6 +14,4 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$loca
   }
 
   $scope.data = $matchFactory.get(localStorage['user_id'], $scope.showMatchRequests());
-
-  console.log(localStorage['user_id']);
 }]);

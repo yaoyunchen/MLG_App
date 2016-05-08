@@ -46,13 +46,13 @@ cMLGApp.config(["$routeProvider", function($routeProvider) {
     controller  : 'matchCreateController'
   })
   .when('/match/pending', {
-    // resolve: {
-    //   "check": function($location, $rootScope){
-    //     if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
-    //       $location.path('/login');
-    //     }
-    //   }
-    // },
+    resolve: {
+      "check": ["$location", "$rootScope", function($location, $rootScope){
+        if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
+          $location.path('/login');
+        }
+      }]
+    },
     templateUrl : 'match/pending.ejs',
     controller  : 'matchPendingController'
   })
@@ -246,8 +246,6 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$loca
   }
 
   $scope.data = $matchFactory.get(localStorage['user_id'], $scope.showMatchRequests());
-
-  console.log(localStorage['user_id']);
 }]);
 angular.module('cMLGApp').controller('signupController', ['$scope', '$users', '$location', function($scope, $users, $location) {
   $scope.pageClass = "page-signup";
