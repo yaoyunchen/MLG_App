@@ -62,13 +62,13 @@ cMLGApp.config(["$routeProvider", function($routeProvider) {
     controller  : 'matchCreateController'
   })
   .when('/match/pending', {
-    resolve: {
-      "check": ["$location", "$rootScope", function($location, $rootScope){
-        if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
-          $location.path('/login');
-        }
-      }]
-    },
+    // resolve: {
+    //   "check": function($location, $rootScope){
+    //     if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
+    //       $location.path('/login');
+    //     }
+    //   }
+    // },
     templateUrl : 'match/pending.ejs',
     controller  : 'matchPendingController'
   })
@@ -160,7 +160,7 @@ cMLGApp.controller('mainController', ['$scope', '$rootScope', '$location', funct
 
 
 }]);
-angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champions', '$matchFactory', '$location', function($scope, $champions, $matchFactory, $location) {
+angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champions', '$matchFactory', '$location', '$users', function($scope, $champions, $matchFactory, $location, $users) {
   $scope.pageClass = "page-createMatch";
   $scope.betType = "closeTrue";
   
@@ -176,9 +176,10 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
 
   $scope.loading = false;
   $scope.userExists;
-  $scope.user_id = {};
-  $scope.user = {};
   $scope.matchType = 1;
+  $scope.tournament_id = 0;
+  $scope.user_likes = 0;
+  $scope.opponent_likes = 0;
 
   $scope.submittedChampion = false;
   $scope.championList = {};
@@ -222,12 +223,35 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
     }
   }
   $scope.createMatchRequest = function() {
+    //creating match requests
+    //$matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
+    //$matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
+    
+    //creating match
+    $scope.userData = $users.checkUsername(localStorage['username']);
+    $scope.opponentData = $users.checkUsername($scope.matchInviteForm.summonerName.$$rawModelValue);
+    console.log($scope.userData);
 
+    // $scope.user_points;
+    // $scope.opponent_points;
+    // $scope.user_last_game_id;
+    // scope.opponent_last_game_id;
 
-
-    // $matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
-    // $matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
-    // $location.path('/');
+    // var createMatch_str = ""+localStorage['user_id']+"/"
+    // +$scope.tournament_id+"/"+
+    // +$scope.user_points+"/"
+    // + 0 +"/"
+    // +$scope.user_last_game_id+"/"
+    // +$scope.opponent_points+"/"
+    // + 0 +"/"
+    // +$scope.opponent_last_game_id+"/"
+    // +$scope.user_likes+"/"
+    // +$scope.opponent_likes+"/"
+    // + 1 +"/"
+    // +$scope.bet*2;
+    
+    $matchFactory.createMatch(createMatch_str);
+    $location.path('/');
   }
 
   $scope.setBrowseChamps = function() {
@@ -256,6 +280,7 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$loca
       if($scope.data !== undefined){
         if($scope.data.value != undefined){
           $scope.matchRequestList = $scope.data.value.data.rows
+          console.log($scope.data.value.data.rows);
         }
       }
     }, 200);
@@ -263,6 +288,30 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$loca
   }
 
   $scope.data = $matchFactory.get(localStorage['user_id'], $scope.showMatchRequests());
+
+  $scope.accept = function(request_id) {
+    console.log(request_id);
+    var data = $scope.data.value.data.rows;
+    
+    for (var key in data) {
+      if (!data.hasOwnProperty(key)) continue;
+      var obj = data[key];
+      console.log(obj);
+    }
+
+  };
+
+  $scope.cancel = function(request_id) {
+    console.log(request_id);
+    var data = $scope.data.value.data.rows;
+    
+    for (var key in data) {
+      if (!data.hasOwnProperty(key)) continue;
+      var obj = data[key];
+      console.log(obj);
+    }
+  };
+
 }]);
 angular.module('cMLGApp').controller('signupController', ['$scope', '$users', '$location', function($scope, $users, $location) {
   $scope.pageClass = "page-signup";
@@ -610,6 +659,18 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
         // do this regardless of success/fail.
       })
     },
+    //create match
+    createMatch: function(user_id, tournament_id, user_points, user_total_games_played, user_last_game_id, opponent_points, opponent_total_games_played, opponent_last_game_id, user_likes, opponent_likes, status, pot, end_time) {
+      var url = '/db/post/match_request/';
+      $http.post(url).then(function(res) {
+        //success
+      }).then(function(res) {
+        // fail.
+        deferred.resolve(res);
+      }).finally(function() {
+        // do this regardless of success/fail.
+      })
+    },
     //get all active match requests
     get: function(user_id, callback) {
       var deferred = $q.defer();
@@ -626,6 +687,8 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
           //converting status int into str
           if(obj.status === 1){
             obj.status_str = 'Pending';
+          } else if(obj.status === 2){
+            obj.status_str = 'Waiting for Other Player';
           }
           //converting bet type int into str
           if(obj.bettype === 0){

@@ -11,7 +11,7 @@ var conString = dbKey();
 //get user data with username
 router.get('/db/search/users/:username', function(req, res) {
   var username = req.params.username;
-  var query = "SELECT id, username FROM Users WHERE username='" + username + "'";
+  var query = "SELECT id, username, email, password, summoner_id FROM Users WHERE username='" + username + "'";
   pg.connect(conString, function(err, client, done) {
     var handleError = function(err) {
       // no error occurred, continue with the request
@@ -126,16 +126,42 @@ router.post('/db/post/match_request/:username/:champion_id/:champion_key/:bet/:b
   });
 })
 
+//create match
+router.post('/db/post/match/', function(req, res) {
+  var username = req.params.username;
+  var champion_id = req.params.champion_id;
+  var champion_key = req.params.champion_key;
+  var bet = req.params.bet;
+  var betType = req.params.betType;
+  var matchType = req.params.matchType;
+
+  pg.connect(conString, function(err, client, done) {
+    if(err) {
+      return console.error('error fetching client from pool', err);
+    }
+    //creating Users table
+    var query = "INSERT INTO Matches (user_id, tournament_id, user_points, user_total_games_played, user_last_game_id, opponent_points, opponent_total_games_played, opponent_last_game_id, user_likes, opponent_likes, status, pot, end_time) VALUES ();";
+    
+    client.query(query, function(err, result) {
+      done();
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("done updating Users Table");
+    });
+  });
+})
+
 //return all active pending games for user
 router.get('/db/get/match_request/active/:user_id', function(req, res) {
   var user_id = req.params.user_id;
-  var query = "SELECT u1.username as username1, u2.username username2, r1.champion_key, r1.status, (m1.create_time + (15 * INTERVAL '1 MINUTE') - CURRENT_TIMESTAMP) as time_left, r1.bet, r1.bettype \
+  var query = "SELECT r1.id id, u1.username username1, u2.username username2, r1.champion_key, r1.status, (m1.create_time + (15 * INTERVAL '1 MINUTE') - CURRENT_TIMESTAMP) as time_left, r1.bet, r1.bettype \
     FROM MatchRequests r1 \
     JOIN Users u1 on r1.user_id = u1.id, \
     MatchRequests r2 \
     JOIN Matches m1 on r2.match_id = m1.id \
     JOIN Users u2 on r2.user_id = u2.id \
-    WHERE r1.user_id = " + user_id + " AND r1.match_id = m1.id AND r1.user_id != r2.user_id AND r1.status = 1;";
+    WHERE r1.user_id = " + user_id + " AND r1.match_id = m1.id AND r1.user_id != r2.user_id AND r1.status > 0 AND  r2.status <> r1.status;;";
   pg.connect(conString, function(err, client, done) {
     var handleError = function(err) {
       // no error occurred, continue with the request

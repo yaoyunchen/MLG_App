@@ -64,7 +64,7 @@ app.use(function(err, req, res, next) {
 ///////////////////////////////////////
 //setting up period database checking//
 ///////////////////////////////////////
-//providing database data
+// providing database data
 // var http = require('http');
 // var pg = require('pg');
 // var dbKey = require('./env.js');

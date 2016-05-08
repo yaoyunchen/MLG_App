@@ -6,35 +6,39 @@
   </div>
   <br/>
   <!-- pending match requests list starts here -->
-  <div class="col-sm-12" ng-repeat="match in matchRequestList">
+  <div class="col-sm-12" ng-repeat="request in matchRequestList">
     <div class="col-sm-12 pending-match-rows">
       <div class="col-sm-2">
-        <img class="selectChampIcon" ng-src="{{match.image}}"/>
+        <img class="selectChampIcon" ng-src="{{request.image}}"/>
       </div>
       <div class="col-sm-2">
         <div>Player #1</div>
-        <div>{{match.username1}}</div>
+        <div>{{request.username1}}</div>
       </div>
-      <div class="col-sm-2">
+      <div class="col-sm-1">
         <div>VS</div>
       </div>
       <div class="col-sm-2">
         <div>Player #2</div>
-        <div>{{match.username2}}</div>
+        <div>{{request.username2}}</div>
       </div>
       <div class="col-sm-2">
         <div> 
-          ${{match.bet}}
+          ${{request.bet}}
           <br/> 
-          on {{match.bettype_str}}
+          on {{request.bettype_str}}
         </div>
       </div>
       <div class="col-sm-2">
-        {{match.status_str}}
+        {{request.status_str}}
         <br/>
         <small>
-          Time Left: {{match.time_left.minutes}}:{{match.time_left.seconds}}
+          Time Left: {{request.time_left.minutes}}:{{request.time_left.seconds}}
         </small>
+      </div>
+      <div class="col-sm-1">
+        <button ng-show="request.status==1" ng-click="accept(request.id)">ACCEPT</button>
+        <button ng-show="request.status==2" ng-click="cancel(request.id)">CANCEL</button>
       </div>
     </div>
   </div>

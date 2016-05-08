@@ -15,6 +15,18 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
         // do this regardless of success/fail.
       })
     },
+    //create match
+    createMatch: function(user_id, tournament_id, user_points, user_total_games_played, user_last_game_id, opponent_points, opponent_total_games_played, opponent_last_game_id, user_likes, opponent_likes, status, pot, end_time) {
+      var url = '/db/post/match_request/';
+      $http.post(url).then(function(res) {
+        //success
+      }).then(function(res) {
+        // fail.
+        deferred.resolve(res);
+      }).finally(function() {
+        // do this regardless of success/fail.
+      })
+    },
     //get all active match requests
     get: function(user_id, callback) {
       var deferred = $q.defer();
@@ -31,6 +43,8 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
           //converting status int into str
           if(obj.status === 1){
             obj.status_str = 'Pending';
+          } else if(obj.status === 2){
+            obj.status_str = 'Waiting for Other Player';
           }
           //converting bet type int into str
           if(obj.bettype === 0){
