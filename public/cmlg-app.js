@@ -158,26 +158,6 @@ angular.module('cMLGApp').controller('loginController', ['$scope', '$location', 
       }
     }, true);
   }
-
-  // $scope.login = function(){
-   
-
-
-
-
-  //   // if($scope.loginForm.$valid && $scope.username == "admin" && $scope.password == "admin"){
-  //   //   $location.path('/');
-  //   //   $scope.loggedIn = $scope.username;
-  //   //   localStorage['username'] = $scope.username;
-  //   //   console.log("Logged in as " + $scope.loggedIn);
-  //   // } else {
-  //   //   alert('Wrong Stuff');
-  //   //   $scope.loginForm.submitted = true;
-  //   //   localStorage['username'] = undefined;
-  //   //   $scope.username = "";
-  //   //   $scope.password = "";
-  //   // }
-  // }
 }]);
 
 var cMLGApp = angular.module('cMLGApp');
