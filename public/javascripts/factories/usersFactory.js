@@ -1,6 +1,6 @@
 var cMLGApp = angular.module('cMLGApp');
 
-cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
+cMLGApp.factory('$users', ['$http', '$q', '$rootScope', function($http, $q, $rootScope) {
 
   return {
     get: function(email, password, callback) {
@@ -38,13 +38,23 @@ cMLGApp.factory('$users', ['$http', '$q', function($http, $q) {
       var url = '/db/search/users/' + username + JSONCALLBACK;
       $http.get(url).then(function(res) {
         deferred.resolve(res)
-        if (callback) {
-          callback;
-        }
       })
 
       return deferred.promise.$$state;
     }, 
+
+    checkEmail: function(email, callback) {
+      var deferred = $q.defer();
+      var url = '/db/search/users/email/' + email + JSONCALLBACK;
+      $http.get(url).then(function(res) {
+        deferred.resolve(res)
+        if (callback) {
+          callback();
+        }
+      })
+
+      return deferred.promise.$$state;
+    },
 
     saveUser: function(data) {
       var url = '/db/post/user/' + data + JSONCALLBACK;

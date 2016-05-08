@@ -11,7 +11,7 @@ var conString = dbKey();
 //get user data with username
 router.get('/db/search/users/:username', function(req, res) {
   var username = req.params.username;
-  var query = "SELECT id, username, email, password FROM Users WHERE username='" + username + "'";
+  var query = "SELECT id, username FROM Users WHERE username='" + username + "'";
   pg.connect(conString, function(err, client, done) {
     var handleError = function(err) {
       // no error occurred, continue with the request
@@ -37,6 +37,33 @@ router.get('/db/search/users/:username', function(req, res) {
 })
 
 //get user data with email and password
+router.get('/db/search/users/email/:email', function(req, res) {
+  var query = "SELECT username, id, email FROM Users WHERE email='" + req.params.email + "';";
+
+  pg.connect(conString, function(err, client, done) {
+    var handleError = function(err) {
+      // no error occurred, continue with the request
+      if(!err) return false;
+      // An error occurred, remove the client from the connection pool.
+      if(client){
+        done(client);
+      }
+      res.writeHead(500, {'content-type': 'text/plain'});
+      res.end('An error occurred');
+      return true;
+    };
+    // handle an error from the connection
+    if(handleError(err)) return;
+
+    client.query(query, function(err, result) {
+      // handle an error from the query
+      if(handleError(err)) return;
+      done();
+      res.json(result);
+    });
+  });
+})
+
 router.get('/db/search/users/login/:email/:password', function(req, res) {
   var email = req.params.email;
   var password = req.params.password;

@@ -23,20 +23,36 @@ cMLGApp.config(function($routeProvider) {
   $routeProvider
   //Homepage
   .when('/', {
+    resolve: {
+      "check": function($location, $rootScope){
+        $rootScope.updateUser();
+      }
+    },
     templateUrl   : 'home.ejs',
     controller    : 'mainController'
   })
   .when('/signup', {
+    resolve: {
+      "check": function($location, $rootScope){
+        $rootScope.updateUser();
+      }
+    },
     templateUrl   : 'signup.ejs',
     controller    : 'signupController'
   })
   .when('/login', {
+    resolve: {
+      "check": function($location, $rootScope){
+        $rootScope.updateUser();
+      }
+    },
     templateUrl : 'login.ejs',
     controller  : 'loginController'
   })
   .when('/match/create', {
     resolve: {
       "check": function($location, $rootScope){
+        $rootScope.updateUser();
         if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
           $location.path('/login');
         }
@@ -59,6 +75,7 @@ cMLGApp.config(function($routeProvider) {
   .when('/user/', {
     resolve: {
       "check": function($location, $rootScope){
+        $rootScope.updateUser();
         if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
           $location.path('/login');
         }
