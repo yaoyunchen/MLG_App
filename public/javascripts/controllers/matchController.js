@@ -1,16 +1,16 @@
-angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champions', '$matchFactory', '$location', '$users', function($scope, $champions, $matchFactory, $location, $users) {
+angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champions', '$matchFactory', '$location', '$users', '$masteryFactory', function($scope, $champions, $matchFactory, $location, $users, $masteryFactory) {
   $scope.pageClass = "page-createMatch";
   $scope.betType = "closeTrue";
   
   $scope.min = function() {
     $scope.bet = 100;
-    console.log($scope.bet);
   }
 
   $scope.max = function() {
     $scope.bet = 1000;
-    console.log($scope.bet);
   }
+  $scope.userData = {};
+  $scope.opponentData = {};
 
   $scope.loading = false;
   $scope.userExists;
@@ -66,14 +66,24 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
     //$matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
     
     //creating match
-    $scope.userData = $users.checkUsername(localStorage['username']);
-    $scope.opponentData = $users.checkUsername($scope.matchInviteForm.summonerName.$$rawModelValue);
-    console.log($scope.userData);
+    
+    (function(username,callback) {
+      $scope.userData = $users.checkUsername(localStorage['username'], function() {
+        var my_id = $scope.userData.value.data.rows[0].summoner_id;
+        $scope.user_points = $masteryFactory.getChampion('na', my_id, $scope.selectedChampion.id);
+        //$scope.user_last_game_id;
 
-    // $scope.user_points;
-    // $scope.opponent_points;
-    // $scope.user_last_game_id;
-    // scope.opponent_last_game_id;
+      });
+
+      $scope.opponentData = $users.checkUsername($scope.matchInviteForm.summonerName.$$rawModelValue, function(){
+        var opponent_id = $scope.opponentData.value.data.rows[0].summoner_id;
+        //$scope.opponent_points = $masteryFactory.getChampion('na', opponent_id, $scope.selectedChampion.id);
+        //scope.opponent_last_game_id;
+
+      });
+        
+    })();    
+
 
     // var createMatch_str = ""+localStorage['user_id']+"/"
     // +$scope.tournament_id+"/"+
@@ -88,8 +98,8 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
     // + 1 +"/"
     // +$scope.bet*2;
     
-    $matchFactory.createMatch(createMatch_str);
-    $location.path('/');
+    // $matchFactory.createMatch(createMatch_str);
+    // $location.path('/');
   }
 
   $scope.setBrowseChamps = function() {

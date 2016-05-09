@@ -36,16 +36,14 @@ const REGIONS = {
 
 function getPlatformID(region) {
   var platformID = '';
-
   for (var key in REGIONS) {
-    if (REGIONS.hasOwnProperty(region) === true) {
-      platformID = REGIONS.key;
+    if (key === region) {
+      platformID = REGIONS[key];
       break;
     }
   }
-
   return platformID;
-}
+};
 
 // Summoner information.
 router.get('/search/:region/:summonerName', function(req, res) {
@@ -79,12 +77,11 @@ router.get('/search/:region/:summonerID/recent', function(req, res) {
 router.get('/search/:region/:summonerID/champmasteries/:championID', function(req, res) {
 
   var PLATFORM_ID = getPlatformID(req.params.region);
-
+  
   var path = 'https://' + req.params.region + '.api.pvp.net/championmastery/location/' + PLATFORM_ID + '/player/' + req.params.summonerID + '/champion/' + req.params.championID + '?api_key=' + API_KEY;
-
   request.get(path, function(err, response) {
     if (!err) {
-      res.json(JSON.parse(response.body));
+      res.json(response);
     } else {
       console.error(err);
     }

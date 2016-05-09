@@ -32,12 +32,15 @@ cMLGApp.factory('$users', ['$http', '$q', '$rootScope', function($http, $q, $roo
       return deferred.promise.$$state;
     },
 
-    checkUsername: function(username) {
+    checkUsername: function(username,callback) {
       var deferred = $q.defer();
 
       var url = '/db/search/users/' + username + JSONCALLBACK;
       $http.get(url).then(function(res) {
         deferred.resolve(res)
+        if(callback){
+          callback();
+        }
       })
 
       return deferred.promise.$$state;
