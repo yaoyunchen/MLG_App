@@ -1,7 +1,8 @@
 body {
   padding:          25px;
   font:             14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  text-align: center
+  text-align:       center;
+  background-color: #f7f7f7;
 }
 
 #main {
@@ -153,4 +154,7 @@ div.match-info > div {
   border:           none;
 }
 
+form.form.match-create-form {
+  padding: 0 10px 0 10px;
+}
 

@@ -42,7 +42,7 @@ cMLGApp.config(function($routeProvider) {
         $rootScope.updateUser();
       }
     },
-    templateUrl   : 'signup.ejs',
+    templateUrl   : 'users/signup.ejs',
     controller    : 'signupController'
   })
   .when('/login', {
@@ -51,7 +51,7 @@ cMLGApp.config(function($routeProvider) {
         $rootScope.updateUser();
       }
     },
-    templateUrl : 'login.ejs',
+    templateUrl : 'users/login.ejs',
     controller  : 'loginController'
   })
   .when('/match/create', {

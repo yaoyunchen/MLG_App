@@ -7,18 +7,40 @@
 
   <div class="row" ng-show="(!browseChamps)">
     <!-- Selecting champions-->
-    <div class="col-sm-6 orm-group floating-label-form-group">
+    <div class="col-sm-6">
       <form name="chooseChampionForm" 
         role="form" 
-        class="form" 
+        class="form match-create-form" 
         novalidate
-      >
-        <label class="col-sm-12 col-title"> =Choose your champion= </label>
-        <input class="form-control" type="text" name="champion" placeholder="Enter Champion Name" ng-model="champion"></input>
-        <div class="col-sm-12 col-title">
-          <button class="btn btn-danger" ng-click="validChampion()" ng-disabled="(champion === Null || champion === '')">Lock In</button>
-          <button class="btn btn-danger" ng-click="setBrowseChamps()">Browse</button>
+      > 
+        <div class="row form-group floating-label-form-group">
+          <div class="col-sm-12">
+            <label for="champion"> 
+              Choose your champion
+            </label>
+            <input type="text" 
+              class="form-control" 
+              name="champion" 
+              placeholder="Enter Champion Name" 
+              ng-model="champion"
+            ></input>
+          </div>
         </div>
+        
+        <div class="row">
+          <div class="col-sm-12">
+            <button class="btn btn-lg btn-success" 
+              ng-click="validChampion()" 
+              ng-disabled="(champion === Null || champion === '')"
+            >Lock In</button>
+
+            <button class="btn btn-lg btn-primary" 
+              ng-click="setBrowseChamps()"
+            >Browse</button>
+          </div>
+
+        </div>
+
         <p class="alert-msg" ng-show="(!championExists && submittedChampion)">
           Invalid Name, please input a correct name or browse for a champion
         </p>
@@ -34,13 +56,11 @@
     <div class="col-sm-6 match-summoner">
       <form name="matchInviteForm"
         role="form"
-        class="form"
-        ng-submit="1"
+        class="form match-create-form"
         novalidate
       >
-        <div class="row" style="text-align: center">
+        <div class="row form-group floating-label-form-group" >
           <div class="col-sm-12">
-            <div class="form-group floating-label-form-group">
               <label for="summonerName">
                 Summoner Name
               </label>
@@ -53,7 +73,10 @@
                 create-match
                 required
               >
-            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
             <span ng-if="matchInviteForm.summonerName.$$rawModelValue === undefined || matchInviteForm.summonerName.$$rawModelValue == ''">
               <small class="text-muted">
                 Enter your opponent's League of Legends in-game name.
@@ -92,24 +115,28 @@
               name="bet"
               placeholder="Enter Bet Amount" 
               ng-model="bet" 
-              ng-min="100" 
-              ng-max="1000" 
+              ng-model-options="{updateOn: 'blur'}"
+              min="{{min_mlg_points}}" 
+              max="{{max_mlg_points}}"
+              ng-disabled="insufficientFunds"
               required 
             />
             <br/>
             <div class="row">
               <div class="col-sm-6">
                 <input type="button"
-                  class="btn btn-danger"
+                  class="btn btn-lg btn-default"
                   ng-click="min()"
-                  value="MIN: 100 pts"
+                  ng-disabled="insufficientFunds"
+                  value="MIN: {{min_mlg_points}} pts"
                 />
               </div>
               <div class="col-sm-6">
                 <input type="button"
-                  class="btn btn-danger"
+                  class="btn btn-lg btn-default"
                   ng-click="max()"
-                  value="MAX: 1000 pts"
+                  ng-disabled="insufficientFunds"
+                  value="MAX: {{max_mlg_points}} pts"
                 />
               </div>
             </div>
@@ -119,7 +146,7 @@
             </small>
           </div>
         </div>
-        <div class="row" style="text-align: center">
+        <div class="row">
           <div class="col-sm-6 form-group">
             <input type="radio" ng-model="betType" value="0">
             <span class="text-muted">Close Match</span>
@@ -131,19 +158,30 @@
         </div>
         <!-- BETS END -->
 
-        <br/>
-        <div class="row" style="text-align: center">
+        <!-- Error message -->
+        <div class="row">
+          <div class="col-sm-12" ng-hide="errorMsgs === undefined || errorMsgs.length == 0">
+            <ul role="tablist" style="text-align: left">
+              <li role="presentation" ng-repeat="error in errorMsgs">
+                {{error}}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Send invites -->
+        <div class="row">
           <div class="col-sm-12">
-            <button class="btn btn-danger" 
+            <button class="btn btn-lg btn-success" 
               type="submit" 
               ng-click="createMatchRequest()" 
-              ng-disabled="signupForm.$invalid"
+              ng-disabled="signupForm.$invalid || !championExists || !userExists"
             >
               Send Invite
             </button>
           </div>
           <div class="col-sm-12">
-            <button class="btn btn-danger" ng-click="back()">Back</button>
+            <button class="btn btn-lg btn-danger" ng-click="back()">Back</button>
           </div>
         </div>
       </form>
