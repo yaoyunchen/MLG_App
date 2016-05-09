@@ -73,6 +73,7 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
         var data = {};
         var result = res.data.rows;
         for (var key in result) {
+
           if (!result.hasOwnProperty(key)) continue;
           var obj = result[key];
           //getting champion image url

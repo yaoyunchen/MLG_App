@@ -136,7 +136,7 @@ router.get('/db/get/match/current/:user_id', function(req, res) {
   var user_id = req.params.user_id;
   var query = `
     SELECT 
-      r1.id id, u1.username username1, u2.username username2, r1.champion_key, r1.status, r1.bet, r1.bettype, (m1.create_time + (15 * INTERVAL '1 MINUTE') - CURRENT_TIMESTAMP) as time_left, m1.user_points, m1.user_total_games_played, m1.user_likes, m1.pot
+      r1.id id, u1.username username1, u2.username username2, r1.champion_key, r1.status, r1.bet, r1.bettype, (m1.create_time + (15 * INTERVAL '1 MINUTE') - CURRENT_TIMESTAMP) as time_left, m1.user_points, m1.user_total_games_played, m1.user_likes, m1.pot, m1.id match_id
     FROM MatchRequests r1 
     JOIN Users u1 ON r1.user_id = u1.id, 
     MatchRequests r2 

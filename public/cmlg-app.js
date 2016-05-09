@@ -511,7 +511,6 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
 
   var getPieData = function(matchData) {
     var pieData = [];
-
     // Reorganize data.
     var sortedData = [];
     for (var i = 0; i < matchData.length; i++) {
@@ -536,7 +535,12 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
       tooltip: 'Current Points'
     })
 
-    for (var i = 0; i < 4; i++) {
+    var max = 4;
+    if (sortedData.length < max) {
+      max = sortedData.length;
+    }
+
+    for (var i = 0; i < max; i++) {
       var data = {
         x: sortedData[i].id, 
         y: [sortedData[i].betAmt],
@@ -545,10 +549,10 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
       pieData.push(data);
     }
 
-    if (sortedData.length > 4) {
+    if (sortedData.length > max) {
       total_x = [];
       total_y = 0;
-      for (var i = 4 - 1; i < sortedData.length; i++) {
+      for (var i = max - 1; i < sortedData.length; i++) {
         total_x.push(sortedData[i].id)
         total_y += sortedData[i].betAmt
       }
@@ -563,10 +567,10 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
   };
 
   var getActiveMatches = function() {
+
     $scope.activeMatches = $matchFactory.getActiveMatches($rootScope.user_id, function() {
       var matches = $scope.activeMatches;
       if (matches.hasOwnProperty('status') && matches.status === 1) {
-
         if (matches.value.data.rowCount > 0) {
           $scope.matchData = matches.value.data.rows;
           // Determine total points and take care of null data.
@@ -937,6 +941,7 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
         var data = {};
         var result = res.data.rows;
         for (var key in result) {
+
           if (!result.hasOwnProperty(key)) continue;
           var obj = result[key];
           //getting champion image url
