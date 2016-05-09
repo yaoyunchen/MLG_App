@@ -158,60 +158,6 @@ router.get('/search/allchampions', function(req, res) {
 module.exports = router;
 
 
-/* SQL QUERY LINES
-=============[ CREATING NEW ROWS ]=============
-// registering Users (need to provide values)
-  "INSERT INTO Users (username, email, user_icon, password, summoner_id, summoner_icon, verification, mlg_points, mlg_tier, logined_today, friendlist) VALUES ();"
-
-// creating MatchRequests (need to provide values)
-  "INSERT INTO MatchRequests (user_id, match_id, champion_id, match_type, accepted) VALUES ();"
-  
-// creating Matches (need to provide values)
-  "INSERT INTO Matches (user_id, tournament_id, user_points, user_total_games_played, user_last_game_id, opponent_points, opponent_total_games_played, opponent_last_game_id, user_likes, opponent_likes, status, pot, end_time) VALUES ();"
-
-// creating Bets (need to provide values) 
-  "INSERT INTO Bets (user_id, match_id, bet_type_id, mlgp_bet, mlgp_change, status) VALUES ();"
-
-// creating BetTypes (need to provide values)
-  "INSERT INTO Bets (type, description, payout) VALUES ();"
-
-=============[ MATCH REQUESTS ]=============
-// delete matchrequests > 15minutes (run check every minute)
-  "DELETE FROM MatchRequests WHERE create_time >= current_time - (15 * interval '1 minute');"
-
-// retrieving all matchrequests for individual user
-  var user_id;
-  "SELECT * FROM MatchRequests WHERE user_id=" + user_id + ";"
-
-
-
-=============[ MATCHES ]=============
-// find matches id to update every 3hours (run check every minute)
-  "SELECT id FROM Matches WHERE create_time >= current_time - (181 * interval '1 minute') AND create_time <= current_time - (179 * interval '1 minute');"
-
-// updating match every 3hours (need variables new points and game id value)
-  var id, user_points, user_total_games_played, user_last_game_id, opponent_points, opponent_total_games_played, opponent_last_game_id, status, update_time;
-  "UPDATE Matches \
-  SET user_points=" + user_points + ", \
-      user_total_games_played=" + user_total_games_played + ", \
-      user_last_game_id=" +  user_last_game_id + ", \
-      opponent_points=" + opponent_points + ", \
-      opponent_total_games_played=" + opponent_total_games_played + ", \
-      opponent_last_game_id=" + opponent_last_game_id + ", \
-      status=" + status + ", \
-      update_time=" + update_time + " \
-  WHERE id=" + id + ";"
-
-// retrieving all matches for individual user
-  var user_id;
-  "SELECT * FROM Matches \
-  JOIN MatchRequest ON Matches.id = MatchRequests.match_id \
-  WHERE MatchRequests.id=" + user_id + ";"
-
-
-*/
-
-
 
 
 
