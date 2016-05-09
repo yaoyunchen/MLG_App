@@ -1,7 +1,19 @@
-<div class="row">
-  <div class="col-sm-12">
+<div class="row" ng-controller="mainController">
+  <div class="col-sm-12 col-title">
     <h1>Champion Mastery League Gambler</h1>
     <h4>Welcome to the cMLG App.</h4>
   </div>
+  <div class="col-sm-12">
+    <div class="row" ng-show="loggedIn">
+      <button class="btn btn-primary" ng-click="$location.path('/match/create')">Create Match</button>
+      <button class="btn btn-primary" ng-click="$location.path('/match/pending')">Pending Matches</button>
+      <button class="btn btn-primary" ng-click="$location.path('/users/user')">Current Matches</button>
+    </div>
+    <div class="row" ng-show="!loggedIn">
+      <button class="btn btn-primary" ng-click="$location.path('/login')">Login</button>
+      <button class="btn btn-danger" ng-click="$location.path('/signup')">Sign Up</button>
+    </div>
+  </div>
 </div>
+
 

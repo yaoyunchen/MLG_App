@@ -30,7 +30,6 @@ cMLGApp.controller('mainController', ['$scope', '$rootScope', '$location', funct
     localStorage['user_id'] = undefined;
     localStorage['mlg_points'] = undefined;
     $rootScope.updateUser();
-    // $scope.updateUser();
     $location.path('/');
   }
 

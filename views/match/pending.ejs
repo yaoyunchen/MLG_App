@@ -51,7 +51,7 @@
               ng-click="accept(request.id)"
               ng-disabled="!request.sufficientPoints"
             >ACCEPT</button>
-            <p class="text-muted" ng-show="!request.sufficientPoints">
+            <p class="text-muted" ng-show="!request.sufficientPoints && request.status==1">
               Insufficient Points!
             </p>
             <button class="btn btn-danger"
@@ -63,43 +63,4 @@
       </tbody>
     </table>
   </div>
-
-<!-- 
-  <div class="col-sm-12" ng-repeat="request in matchRequestList">
-    <div class="col-sm-12 pending-match-rows">
-      <div class="col-sm-2">
-        <img class="selectChampIcon" ng-src="{{request.image}}"/>
-      </div>
-      <div class="col-sm-2">
-        <div>Player #1</div>
-        <div>{{request.username1}}</div>
-      </div>
-      <div class="col-sm-1">
-        <div>VS</div>
-      </div>
-      <div class="col-sm-2">
-        <div>Player #2</div>
-        <div>{{request.username2}}</div>
-      </div>
-      <div class="col-sm-2">
-        <div> 
-          ${{request.bet}}
-          <br/> 
-          on {{request.bettype_str}}
-        </div>
-      </div>
-      <div class="col-sm-2">
-        {{request.status_str}}
-        <br/>
-        <small>
-          Time Left: {{request.time_left.minutes}}:{{request.time_left.seconds}}
-        </small>
-      </div>
-      <div class="col-sm-1">
-        <button ng-show="request.status==1" ng-click="accept(request.id)">ACCEPT</button>
-        <button ng-show="request.status==2" ng-click="cancel(request.id)">CANCEL</button>
-      </div>
-    </div>
-  </div> -->
-  <!-- PENDING MATCH END -->
 </div>

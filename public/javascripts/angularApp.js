@@ -15,7 +15,6 @@ cMLGApp.run(function($rootScope) {
     $rootScope.username = localStorage['username'];
     $rootScope.user_id = localStorage['user_id'];
     $rootScope.mlg_points = localStorage['mlg_points'];
-
     if ($rootScope.username === 'undefined' || $rootScope.username == '' || $rootScope.user_id === 'undefined' || $rootScope.user_id == '') {
       $rootScope.loggedIn = false;
     } else {

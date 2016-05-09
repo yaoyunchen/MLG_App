@@ -152,14 +152,5 @@ router.get('/search/allchampions', function(req, res) {
   });
 });
 
-
-
-
 module.exports = router;
-
-
-
-
-
-
 

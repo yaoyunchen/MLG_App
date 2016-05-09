@@ -15,7 +15,6 @@ cMLGApp.run(["$rootScope", function($rootScope) {
     $rootScope.username = localStorage['username'];
     $rootScope.user_id = localStorage['user_id'];
     $rootScope.mlg_points = localStorage['mlg_points'];
-
     if ($rootScope.username === 'undefined' || $rootScope.username == '' || $rootScope.user_id === 'undefined' || $rootScope.user_id == '') {
       $rootScope.loggedIn = false;
     } else {
@@ -163,7 +162,6 @@ cMLGApp.controller('mainController', ['$scope', '$rootScope', '$location', funct
     localStorage['user_id'] = undefined;
     localStorage['mlg_points'] = undefined;
     $rootScope.updateUser();
-    // $scope.updateUser();
     $location.path('/');
   }
 
