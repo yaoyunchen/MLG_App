@@ -11,7 +11,7 @@ var conString = dbKey();
 //get user data with username
 router.get('/db/search/users/:username', function(req, res) {
   var username = req.params.username;
-  var query = "SELECT id, username, email, password, summoner_id FROM Users WHERE username='" + username + "'";
+  var query = "SELECT id, username, email, mlg_points, summoner_id FROM Users WHERE username='" + username + "'";
   pg.connect(conString, function(err, client, done) {
     var handleError = function(err) {
       // no error occurred, continue with the request
@@ -84,7 +84,7 @@ router.get('/db/search/users/login/:email/:password', function(req, res) {
     // handle an error from the connection
     if(handleError(err)) return;
 
-    var query = "SELECT id, username, email, password FROM Users WHERE email='" + email + "'"
+    var query = "SELECT id, username, email, password, mlg_points FROM Users WHERE email='" + email + "'"
     client.query(query, function(err, result) {
       // handle an error from the query
       if(handleError(err)) return;
@@ -186,6 +186,53 @@ router.get('/db/get/match_request/active/:user_id', function(req, res) {
   });
 })
 
+// Get all active matches for users.
+router.get('/db/get/match/current/:user_id', function(req, res) {
+  var user_id = req.params.user_id;
+  var query = `
+    SELECT 
+      r1.id id, u1.username username1, u2.username username2, r1.champion_key, r1.status, r1.bet, r1.bettype, (m1.create_time + (15 * INTERVAL '1 MINUTE') - CURRENT_TIMESTAMP) as time_left, m1.user_points, m1.user_total_games_played, m1.user_likes, m1.pot
+    FROM MatchRequests r1 
+    JOIN Users u1 ON r1.user_id = u1.id, 
+    MatchRequests r2 
+    JOIN Matches m1 ON r2.match_id = m1.id 
+    JOIN Users u2 ON r2.user_id = u2.id 
+    WHERE r1.user_id = ` + user_id + ` AND r1.match_id = m1.id AND r1.user_id != r2.user_id AND m1.status = 2 
+      AND (r2.status = 2 AND r1.status = 2);`;
+  pg.connect(conString, function(err, client, done) {
+    var handleError = function(err) {
+      // no error occurred, continue with the request
+      if(!err) return false;
+      // An error occurred, remove the client from the connection pool.
+      if(client){
+        done(client);
+      }
+      res.writeHead(500, {'content-type': 'text/plain'});
+      res.end('An error occurred');
+      return true;
+    };
+    // handle an error from the connection
+    if(handleError(err)) return;
+
+    client.query(query, function(err, result) {
+      // handle an error from the query
+      if(handleError(err)) return;
+      done();
+      res.json(result);
+    });
+  });
+})
+
+
+
+
+
+
+
+
+
+
+
 
 //create/register users
 router.post('/db/post/user/:data', function(req, res) {
@@ -205,7 +252,7 @@ router.post('/db/post/user/:data', function(req, res) {
     if(handleError(err)) return;
 
     var columns = '(username, email, user_icon, password, summoner_id, summoner_icon, verification, mlg_points, mlg_tier, logined_today, friendlist) ';
-    var query = 'INSERT INTO USERS ' + columns + 'VALUES (' + req.params.data + ') RETURNING id, username;';
+    var query = 'INSERT INTO USERS ' + columns + 'VALUES (' + req.params.data + ') RETURNING id, username, mlg_points;';
 
     client.query(query, function(err, result) {
       // handle an error from the query

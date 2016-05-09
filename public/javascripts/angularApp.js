@@ -5,12 +5,17 @@ const JSONCALLBACK = '?callback=JSON_CALLBACK';
 cMLGApp.run(function($rootScope) {
   $rootScope.username;
   $rootScope.user_id;
+  $rootScope.mlg_points;
   $rootScope.loggedIn;
   $rootScope.updateUser = function() {
     localStorage['username'];
     localStorage['user_id'];
+    localStorage['mlg_points'];
+    
     $rootScope.username = localStorage['username'];
     $rootScope.user_id = localStorage['user_id'];
+    $rootScope.mlg_points = localStorage['mlg_points'];
+
     if ($rootScope.username === 'undefined' || $rootScope.username == '' || $rootScope.user_id === 'undefined' || $rootScope.user_id == '') {
       $rootScope.loggedIn = false;
     } else {

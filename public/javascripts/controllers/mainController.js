@@ -10,6 +10,7 @@ cMLGApp.controller('mainController', ['$scope', '$rootScope', '$location', funct
     $rootScope.$watch('loggedIn', function() {
       $scope.username = $rootScope.username;
       $scope.user_id = $rootScope.user_id;
+      $scope.mlg_points = $rootScope.mlg_points;
       $scope.loggedIn = $rootScope.loggedIn;
     }) 
   }
@@ -27,6 +28,7 @@ cMLGApp.controller('mainController', ['$scope', '$rootScope', '$location', funct
   $scope.logout = function() {
     localStorage['username'] = undefined;
     localStorage['user_id'] = undefined;
+    localStorage['mlg_points'] = undefined;
     $rootScope.updateUser();
     // $scope.updateUser();
     $location.path('/');

@@ -19,9 +19,85 @@
       <!-- MATCH GRAPH END -->
 
       <!-- MATCH INFO START -->
-      <div class="col-sm-6 match-info">
-        <h3 col-title>{{ currentPie }}</h3>
-        {{ pieData }}
+      <div class="col-sm-6 match-info"
+       
+      >
+        <!-- Div Title -->
+        <div class="row">
+          <div class="col-sm-12">
+            <h4 class="col-title" style="font-weight:bold">Match Info</h4>
+          </div>
+        </div>
+        <!-- Match Title -->
+        <div class="row pie-title">
+          <div class="col-sm-12">
+            <h2 class="col-title" style="margin: 0">{{ currentPie }}</h2>
+          </div>
+        </div>
+        <!-- Single Match Info -->
+        <div class="row single-data" ng-show="singlePieData">
+          <!-- Champ Icon -->
+          <div class="col-sm-6" >
+            <img ng-src="{{ singlePieData.image }}"/>
+          </div>
+          <!-- Other Info -->
+          <div class="col-sm-6">
+            <p>Champion: {{ singlePieData.champion_key }}</p>
+            <p>Avg Pts: {{ singlePieData.user_points }}</p>
+            <p>Matches Played: {{singlePieData.user_total_games_played}}</p>
+            <p>Total Pot: {{ singlePieData.pot }}</p>
+          </div>
+        </div>
+
+        <!-- Multi Match Info -->
+        <div class="row multi-data" ng-show="multiPieData">
+
+          <table class="table table-hover table-borderless">
+            <thead>
+              <tr>
+                <th> Champion </th>
+                <th> Info </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="data in multiPieData">
+                <td class="match-champ-icon">
+                  <img ng-src="{{ data.image }}"/>
+                </td>
+                <td class="match-details">
+                  <p>
+                    <span class="bold">Champion: </span>
+                    <span>{{ data.champion_key }}</span>
+                  </p>
+                  <p>
+                    <span class="bold">Opponent: </span>
+                    <span>{{ data.username2 }}</span>
+                  </p>
+                  <p>
+                    <span class="bold">Avg Pts: </span>
+                    <span>{{ data.user_points }}</span>
+                  </p>
+                  <p>
+                    <span class="bold">Matches Played: </span>
+                    <span>{{data.user_total_games_played}}</span>
+                  </p>
+                  <p>
+                    <span class="bold">Total Pot: </span>
+                    <span>{{ data.pot }}</span>
+                  </p>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Current points -->
+        <div class="row cur-pts" ng-show="!singlePieData && !multiPieData && currentPie">
+          <div class="col-sm-12">
+            <h3>You currently have {{ user.cur_mlg_points }} points!</h3>
+          </div>
+        </div>
       </div>
       <!-- MATCH INFO END -->
     </div>

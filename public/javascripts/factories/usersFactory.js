@@ -16,7 +16,8 @@ cMLGApp.factory('$users', ['$http', '$q', '$rootScope', function($http, $q, $roo
           if (password === res.data.password) {
             var user = {
               username: res.data.username, 
-              user_id: res.data.id
+              user_id: res.data.id, 
+              mlg_points: res.data.mlg_points
             }
             deferred.resolve(user)
           } else {
@@ -66,6 +67,7 @@ cMLGApp.factory('$users', ['$http', '$q', '$rootScope', function($http, $q, $roo
         if (res.data.hasOwnProperty('rows')) {
           localStorage['username'] = res.data.rows[0].username;
           localStorage['user_id'] = res.data.rows[0].id;
+          localStorage['mlg_points'] = res.data.rows[0].mlg_points;
         }
       })
     }

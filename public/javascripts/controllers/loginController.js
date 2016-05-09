@@ -28,6 +28,7 @@ angular.module('cMLGApp').controller('loginController', ['$scope', '$rootScope',
           } else {
             localStorage['username'] = $scope.data.value.username;
             localStorage['user_id'] = $scope.data.value.user_id;
+            localStorage['mlg_points'] = $scope.data.value.mlg_points;
             $rootScope.updateUser();
             $location.path('/');
           }

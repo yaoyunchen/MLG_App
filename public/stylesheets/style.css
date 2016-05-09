@@ -7,6 +7,7 @@ body {
 #main {
   margin-top:       10px;
   padding:          0px;
+  width:            100%;
 }
 
 a {
@@ -74,16 +75,12 @@ a.label-link, a.label-link:hover, a.label-link:visited, a.label-link:active {
   padding:          0px;
 }
 
-.match-graph {
+.match-graph, .match-info {
   padding:          0px;
   text-align:       center;
-  height:           300px;
+  height:           500px;
   border:           1px solid black;
-}
-
-.match-info {
-  height:           300px;
-  border:           1px solid black;
+  border-radius:    20px;
 }
 
 .ac-chart {
@@ -93,5 +90,51 @@ a.label-link, a.label-link:hover, a.label-link:visited, a.label-link:active {
 
 .chart {
   width:            100%;
-  height:           300px;
+  height:           500px;
 }
+
+.pie-title > div.col-sm-12 {
+  margin-top:       0;
+}
+
+div.match-info > div {
+  width:            100%;
+  margin:           0;
+}
+
+.multi-data {
+  overflow-y:       scroll;
+  max-height:       65%;
+}
+
+.multi-data > table {
+  table-layout:     fixed;
+  word-wrap:        break-word;
+  margin:           auto;
+  font-size:        1em;
+  margin-bottom:    20px;
+}
+
+.multi-data > td {
+  width:            10%;
+  border:           none;
+}
+
+.multi-data > table > thead > tr > th {
+  vertical-align:   middle;
+  text-align:       center;
+}
+
+.multi-data > table > tbody > tr > tr > p {
+  margin-bottom:    5px;
+}
+
+.bold {
+  font-weight:      bold;
+}
+
+.table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+  border:           none;
+}
+
+

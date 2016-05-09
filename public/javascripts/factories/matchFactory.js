@@ -27,6 +27,7 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
         // do this regardless of success/fail.
       })
     },
+
     //get all active match requests
     get: function(user_id, callback) {
       var deferred = $q.defer();
@@ -53,13 +54,41 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
             obj.bettype_str = 'Big Win';
           }
         };
-
         deferred.resolve(res);
-      })
 
-      if (callback) {
-        callback();
-      }
+        if (callback) {
+          callback();
+        }
+      })
+      return deferred.promise.$$state;
+    },
+
+    // All current matches for a user.
+    getActiveMatches: function(user_id, callback) {
+      var deferred = $q.defer();
+      var url = '/db/get/match/current/' + user_id + '?callback=JSON_CALLBACK';
+      $http.get(url).then(function(res) {
+        //success
+        var data = {};
+        var result = res.data.rows;
+        for (var key in result) {
+          if (!result.hasOwnProperty(key)) continue;
+          var obj = result[key];
+          //getting champion image url
+          obj.image = 'http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/'+obj.champion_key+'.png'
+          //converting bet type int into str
+          if(obj.bettype === 0){
+            obj.bettype_str = 'Close Match';
+          } else if(obj.bettype === 1){
+            obj.bettype_str = 'Big Win';
+          }
+        };
+        deferred.resolve(res);
+
+        if (callback) {
+          callback();
+        }
+      })
       return deferred.promise.$$state;
     }
   };
