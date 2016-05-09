@@ -1,4 +1,4 @@
-var cMLGApp = angular.module('cMLGApp', ['ngRoute', 'ngAnimate']);
+var cMLGApp = angular.module('cMLGApp', ['ngRoute', 'ngAnimate', 'ngDialog', 'angularCharts']);
 
 const JSONCALLBACK = '?callback=JSON_CALLBACK';
 
@@ -72,7 +72,7 @@ cMLGApp.config(function($routeProvider) {
     templateUrl : 'match/pending.ejs',
     controller  : 'matchPendingController'
   })
-  .when('/user/', {
+  .when('/users/user', {
     resolve: {
       "check": function($location, $rootScope){
         $rootScope.updateUser();
@@ -81,7 +81,7 @@ cMLGApp.config(function($routeProvider) {
         }
       }
     },
-    templateUrl : 'user/user.ejs',
+    templateUrl : 'users/user.ejs',
     controller  : 'userController'
   });
 });

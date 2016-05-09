@@ -1,0 +1,36 @@
+<div class="row user-profile"
+  ng-controller="userController"
+>
+  <div class="col-sm-12 col-title">
+    <h1> {{ user.username }}'s Profile</h1>
+  </div>
+
+  <!-- MATCHES INFORMATION START -->
+  <div class="col-sm-12">
+    <div class="row user-matches">
+      <!-- MATCH GRAPH START -->
+      <div class="col-sm-6 match-graph">
+        <div class="chart"
+          data-ac-chart="'pie'"
+          data-ac-data="data"
+          data-ac-config="config"
+        ></div>
+      </div>
+      <!-- MATCH GRAPH END -->
+
+      <!-- MATCH INFO START -->
+      <div class="col-sm-6 match-info">
+        <h3 col-title>{{ currentPie }}</h3>
+        {{ pieData }}
+      </div>
+      <!-- MATCH INFO END -->
+    </div>
+  </div>
+  <!-- MATCHES INFORMATION END -->
+
+
+
+
+
+</div>
+

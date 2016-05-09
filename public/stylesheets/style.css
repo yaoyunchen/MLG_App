@@ -1,36 +1,42 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding:          25px;
+  font:             14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  text-align: center
+}
+
+#main {
+  margin-top:       10px;
+  padding:          0px;
 }
 
 a {
-  color:          #00B7FF;
+  color:            #00B7FF;
 }
 
-.row-first {
-  margin-top:     10px;
+.row-first {  
+  margin-top:       10px;
 }
 
 .col-title {
-  text-align:     center;
+  text-align:       center;
 }
 
 .col-sm-12 {
-  margin:         10px 10px 10px 10px;
+  margin:           10px 10px 10px 10px;
 }
 
 
 .img-signup-icon {
-  margin-top:     25px;
+  margin-top:       25px;
 }
 
 
 .signup {
-  text-align:     center;
+  text-align:       center;
 }
 
 .signup-submit > input {
-  margin-top:     10px;
+  margin-top:       10px;
 }
 
 .alert-msg {
@@ -43,19 +49,49 @@ img.img-signup-icon:hover {
 }
 
 .selectChamp {
-  height: 60px;
-  width: 60px;
-  float: left;
+  height:           60px;
+  width:            60px;
+  float:            left;
 }
 
 .selectChampIcon {
-  max-width:100%;
-  max-height:100%;
+  max-width:        100%;
+  max-height:       100%;
 }
 
 .pending-match-rows {
-  margin-bottom: 10px;
+  margin-bottom:    10px;
   background-color: yellow;
-  border-width: 2px;
-  border-style: solid;
+  border-width:     2px;
+  border-style:     solid;
+}
+
+a.label-link, a.label-link:hover, a.label-link:visited, a.label-link:active {
+  color:            #9D9D9D !important; 
+}
+
+.user-profile {
+  padding:          0px;
+}
+
+.match-graph {
+  padding:          0px;
+  text-align:       center;
+  height:           300px;
+  border:           1px solid black;
+}
+
+.match-info {
+  height:           300px;
+  border:           1px solid black;
+}
+
+.ac-chart {
+  text-align:       center;
+  width:            100% !important;
+}
+
+.chart {
+  width:            100%;
+  height:           300px;
 }

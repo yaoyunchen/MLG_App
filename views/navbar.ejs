@@ -31,17 +31,14 @@
         </li>
       </ul>
       <ul class="nav navbar-right navbar-nav">
-<!--         <li dropdown>
-          <a href="#summoner" 
-            ng-click="navCollapsed = !navCollapsed"
-          >
-            Summoner
-          </a>
-        </li> -->
-
         <li dropdown ng-show="loggedIn">
-          <a>
-            Logged In As: {{ username }}
+          <a class="label-link">
+            Logged in as:
+          </a>
+        </li>
+        <li dropdown ng-show="loggedIn">
+          <a href="/#/users/user" ng-click="navCollapsed = !navCollapsed;">
+            <p style="font-style: italic">{{ username }}</p>
           </a>
         </li>
         <li dropdown ng-show="loggedIn">
