@@ -1,4 +1,4 @@
-angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champions', '$matchFactory', '$location', '$users', '$masteryFactory', '$summoner', function($scope, $champions, $matchFactory, $location, $users, $masteryFactory, $summoner) {
+angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$rootScope', '$champions', '$matchFactory', '$location', '$users', '$masteryFactory', '$summoner', function($scope, $rootScope, $champions, $matchFactory, $location, $users, $masteryFactory, $summoner) {
   $scope.pageClass = "page-createMatch";
   $scope.betType = 0;
   
@@ -96,9 +96,14 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
                   +$scope.bet*2;
                   
                   var matchid = $matchFactory.createMatch(createMatch_str, function(res){
-                    console.log(res.data.rows[0].id);
-                    $matchFactory.post(localStorage['user_id'], res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,2);
+                    $matchFactory.post($rootScope.user_id, res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,2);
                     $matchFactory.post($scope.opponentData.value.data.rows[0].id, res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,1);
+
+                    // Update the user's mlg_points.
+                    $users.updateMLGPoints($rootScope.user_id, parseInt($rootScope.mlg_points) - parseInt($scope.bet), function() {
+                      localStorage['mlg_points'] = parseInt($rootScope.mlg_points) - parseInt($scope.bet);
+                    });
+                     $rootScope.updateUser();
                     $location.path('/match/pending');    
                   });
                 });
@@ -122,7 +127,6 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
 
   $scope.selectChamp = function(name) {
     $scope.champion = name;
-    console.log(name);
     $scope.browseChamps = false;
     $scope.validChampion();
   }

@@ -96,8 +96,8 @@ router.get('/db/matchrequests/:match_id', function(req, res) {
   })
 })
 
-// Accept match requests.
-router.post('/db/matches/accept/:match_id/:request_id/:user_id/:mlg_points', function(req, res) {
+// Change match, match request and user status.
+router.post('/db/matches/:status/:match_id/:user_id/:mlg_points', function(req, res) {
   pg.connect(conString, function(err, client, done) {
     var handleError = function(err) {
       // no error occurred, continue with the request
@@ -117,19 +117,19 @@ router.post('/db/matches/accept/:match_id/:request_id/:user_id/:mlg_points', fun
       BEGIN;
       UPDATE Matches
       SET user_points = 0, user_total_games_played = 0,
-      opponent_points = 0, opponent_total_games_played = 0, user_likes = 0, opponent_likes = 0, status = 2, update_time = current_timestamp
+      opponent_points = 0, opponent_total_games_played = 0, user_likes = 0, opponent_likes = 0, status = ` + req.params.status + `, update_time = current_timestamp
       WHERE id = ` + req.params.match_id +`;
       
       UPDATE MatchRequests
-      SET status = 2, update_time = current_timestamp
-      WHERE id = ` + req.params.request_id + `;
+      SET status = ` + req.params.status + `, update_time = current_timestamp
+      WHERE match_id = ` + req.params.match_id + `;
 
       UPDATE Users
       SET mlg_points = ` + req.params.mlg_points + `
       WHERE id = ` + req.params.user_id + `;
       COMMIT;
     `;
-    console.log(query)
+
     client.query(query, function(err, result) {
       // handle an error from the query
       if(handleError(err)) return;
@@ -139,10 +139,6 @@ router.post('/db/matches/accept/:match_id/:request_id/:user_id/:mlg_points', fun
   })
 
 })
-
-
-
-// Cancel match requests.
 
 
 

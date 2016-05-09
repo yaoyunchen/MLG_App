@@ -21,10 +21,10 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
       var url = '/db/post/match/' + data_str;
       $http.post(url).then(function(res) {
         //success
+        deferred.resolve(res);
         if(callback){
           callback(res);
         }
-        deferred.resolve(res);
       })
       return deferred.promise.$$state;
     },
@@ -108,15 +108,18 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
       return deferred.promise.$$state;
     },
 
-    // Accept Match
-    acceptMatch: function(match_id, request_id, user_id, mlg_points) {
+    // Accept or cancel a Match. Updates the Matches, MatchRequests and Users table.
+    changeMatchStatus: function(status, match_id, user_id, mlg_points, callback) {
       var deferred = $q.defer();
+      var url = '/db/matches/' + status + '/' + match_id + '/' + user_id + '/' + mlg_points;
 
-      var url = '/db/matches/accept/' + match_id + '/' + request_id + '/' + user_id + '/' + mlg_points;
-      console.log(url)
       $http.post(url).then(function(res) {
         deferred.resolve(res);
+        if (callback) {
+          callback();
+        }
       });
+   
       return deferred.promise.$$state;
     }
 

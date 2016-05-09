@@ -177,7 +177,8 @@ router.get('/db/get/match_request/active/:user_id', function(req, res) {
     MatchRequests r2 \
     JOIN Matches m1 on r2.match_id = m1.id \
     JOIN Users u2 on r2.user_id = u2.id \
-    WHERE r1.user_id = " + user_id + " AND r1.match_id = m1.id AND r1.user_id != r2.user_id AND r1.status > 0 AND  r2.status <> r1.status;;";
+    WHERE r1.user_id = " + user_id + " AND r1.match_id = m1.id AND r1.user_id != r2.user_id AND r1.status > 0 AND  r2.status <> r1.status;";
+    console.log(query)
   pg.connect(conString, function(err, client, done) {
     var handleError = function(err) {
       // no error occurred, continue with the request
@@ -200,6 +201,39 @@ router.get('/db/get/match_request/active/:user_id', function(req, res) {
       res.json(result);
     });
   });
+})
+
+// Update user's mlg points.
+router.post('/db/post/user/:user_id/:mlg_points', function(req, res) {
+  pg.connect(conString, function(err, client, done) {
+    var handleError = function(err) {
+      // no error occurred, continue with the request
+      if(!err) return false;
+      // An error occurred, remove the client from the connection pool.
+      if(client){
+        done(client);
+      }
+      res.writeHead(500, {'content-type': 'text/plain'});
+      res.end('An error occurred');
+      return true;
+    };
+    // handle an error from the connection
+    if(handleError(err)) return;
+
+    var query = `
+      UPDATE Users
+      SET mlg_points = ` + req.params.mlg_points + `
+      WHERE id = ` + req.params.user_id + `;
+      COMMIT;
+    `;
+
+    client.query(query, function(err, result) {
+      // handle an error from the query
+      if(handleError(err)) return;
+      done();
+      res.json(result);
+    });
+  })
 })
 
 

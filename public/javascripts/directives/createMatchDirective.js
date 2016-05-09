@@ -15,8 +15,7 @@ angular.module('cMLGApp').directive('createMatch', function($timeout, $q, $http)
             } else {
               // Summoner is not registered, check if the name entered is actual summoner name.
               scope.userExists = false;
-
-              console.log('user not registered');
+              alert('User not registered!');
             }
           }
         }, function(res){

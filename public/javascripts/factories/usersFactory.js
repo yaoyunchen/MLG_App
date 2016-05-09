@@ -70,6 +70,15 @@ cMLGApp.factory('$users', ['$http', '$q', '$rootScope', function($http, $q, $roo
           localStorage['mlg_points'] = res.data.rows[0].mlg_points;
         }
       })
+    },
+
+    updateMLGPoints: function(user_id, mlg_points, callback) {
+      var url = '/db/post/user/' + user_id + '/' + mlg_points;
+      $http.post(url).then(function(res) {
+        if(callback) {
+          callback();
+        }
+      })
     }
   };
 }]);

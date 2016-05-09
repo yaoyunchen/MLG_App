@@ -169,7 +169,7 @@ cMLGApp.controller('mainController', ['$scope', '$rootScope', '$location', funct
 
 
 }]);
-angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champions', '$matchFactory', '$location', '$users', '$masteryFactory', '$summoner', function($scope, $champions, $matchFactory, $location, $users, $masteryFactory, $summoner) {
+angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$rootScope', '$champions', '$matchFactory', '$location', '$users', '$masteryFactory', '$summoner', function($scope, $rootScope, $champions, $matchFactory, $location, $users, $masteryFactory, $summoner) {
   $scope.pageClass = "page-createMatch";
   $scope.betType = 0;
   
@@ -267,9 +267,14 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
                   +$scope.bet*2;
                   
                   var matchid = $matchFactory.createMatch(createMatch_str, function(res){
-                    console.log(res.data.rows[0].id);
-                    $matchFactory.post(localStorage['user_id'], res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,2);
+                    $matchFactory.post($rootScope.user_id, res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,2);
                     $matchFactory.post($scope.opponentData.value.data.rows[0].id, res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,1);
+
+                    // Update the user's mlg_points.
+                    $users.updateMLGPoints($rootScope.user_id, parseInt($rootScope.mlg_points) - parseInt($scope.bet), function() {
+                      localStorage['mlg_points'] = parseInt($rootScope.mlg_points) - parseInt($scope.bet);
+                    });
+                     $rootScope.updateUser();
                     $location.path('/match/pending');    
                   });
                 });
@@ -293,7 +298,6 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
 
   $scope.selectChamp = function(name) {
     $scope.champion = name;
-    console.log(name);
     $scope.browseChamps = false;
     $scope.validChampion();
   }
@@ -312,16 +316,19 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$root
     }
   };
 
-  $scope.data = $matchFactory.get($rootScope.user_id, function() {
-    if($scope.data !== undefined){
-      if($scope.data.value !== undefined){
-        $scope.matchRequestList = $scope.data.value.data.rows;
+  $scope.checkPending = function() {
+    $scope.data = $matchFactory.get($rootScope.user_id, function() {
+      if($scope.data !== undefined){
+        if($scope.data.value !== undefined){
+          $scope.matchRequestList = $scope.data.value.data.rows;
+        }
       }
-    }
-    for (var i = 0; i < $scope.matchRequestList.length; i++) {
-      $scope.matchRequestList[i].sufficientPoints = checkPoints(($scope.matchRequestList[i].bet));
-    }
-  });
+      for (var i = 0; i < $scope.matchRequestList.length; i++) {
+        $scope.matchRequestList[i].sufficientPoints = checkPoints(($scope.matchRequestList[i].bet));
+      }
+    });
+  }
+  $scope.checkPending();
 
   $scope.accept = function(request_id) {
     var data = $scope.data.value.data.rows;
@@ -333,20 +340,31 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$root
         break;
       }
     }
-      
-    $matchFactory.acceptMatch(acceptRequest.match_id, request_id, $rootScope.user_id, parseInt($rootScope.mlg_points) - parseInt(acceptRequest.bet));
 
-    $location.path('/users/user')
+    $matchFactory.changeMatchStatus(2, acceptRequest.match_id, $rootScope.user_id, parseInt($rootScope.mlg_points) - parseInt(acceptRequest.bet), function() {
+      localStorage['mlg_points'] = parseInt($rootScope.mlg_points) - parseInt(acceptRequest.bet);
+      $rootScope.updateUser();
+      $scope.checkPending();
+    });
   };
 
   $scope.cancel = function(request_id) {
-    console.log('denied!', request_id);
-    // var data = $scope.data.value.data.rows;
+    var data = $scope.data.value.data.rows;
+    var acceptRequest;
+
+    for (var i = 0; i < data.length; i++) {
+      if (request_id == data[i].id) {
+        acceptRequest = data[i];
+        break;
+      }
+    }
+
+    $matchFactory.changeMatchStatus(0, acceptRequest.match_id, $rootScope.user_id, parseInt($rootScope.mlg_points) + parseInt(acceptRequest.bet), function() {
+      localStorage['mlg_points'] = parseInt($rootScope.mlg_points) + parseInt(acceptRequest.bet);
+      $rootScope.updateUser();
+      $scope.checkPending();
+    });
     
-    // for (var key in data) {
-    //   if (!data.hasOwnProperty(key)) continue;
-    //   var obj = data[key];
-    // }
   };
 
 }]);
@@ -695,8 +713,7 @@ angular.module('cMLGApp').directive('createMatch', ["$timeout", "$q", "$http", f
             } else {
               // Summoner is not registered, check if the name entered is actual summoner name.
               scope.userExists = false;
-
-              console.log('user not registered');
+              alert('User not registered!');
             }
           }
         }, function(res){
@@ -889,10 +906,10 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
       var url = '/db/post/match/' + data_str;
       $http.post(url).then(function(res) {
         //success
+        deferred.resolve(res);
         if(callback){
           callback(res);
         }
-        deferred.resolve(res);
       })
       return deferred.promise.$$state;
     },
@@ -976,15 +993,18 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
       return deferred.promise.$$state;
     },
 
-    // Accept Match
-    acceptMatch: function(match_id, request_id, user_id, mlg_points) {
+    // Accept or cancel a Match. Updates the Matches, MatchRequests and Users table.
+    changeMatchStatus: function(status, match_id, user_id, mlg_points, callback) {
       var deferred = $q.defer();
+      var url = '/db/matches/' + status + '/' + match_id + '/' + user_id + '/' + mlg_points;
 
-      var url = '/db/matches/accept/' + match_id + '/' + request_id + '/' + user_id + '/' + mlg_points;
-      console.log(url)
       $http.post(url).then(function(res) {
         deferred.resolve(res);
+        if (callback) {
+          callback();
+        }
       });
+   
       return deferred.promise.$$state;
     }
 
@@ -1112,6 +1132,15 @@ cMLGApp.factory('$users', ['$http', '$q', '$rootScope', function($http, $q, $roo
           localStorage['username'] = res.data.rows[0].username;
           localStorage['user_id'] = res.data.rows[0].id;
           localStorage['mlg_points'] = res.data.rows[0].mlg_points;
+        }
+      })
+    },
+
+    updateMLGPoints: function(user_id, mlg_points, callback) {
+      var url = '/db/post/user/' + user_id + '/' + mlg_points;
+      $http.post(url).then(function(res) {
+        if(callback) {
+          callback();
         }
       })
     }

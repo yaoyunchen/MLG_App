@@ -10,16 +10,19 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$root
     }
   };
 
-  $scope.data = $matchFactory.get($rootScope.user_id, function() {
-    if($scope.data !== undefined){
-      if($scope.data.value !== undefined){
-        $scope.matchRequestList = $scope.data.value.data.rows;
+  $scope.checkPending = function() {
+    $scope.data = $matchFactory.get($rootScope.user_id, function() {
+      if($scope.data !== undefined){
+        if($scope.data.value !== undefined){
+          $scope.matchRequestList = $scope.data.value.data.rows;
+        }
       }
-    }
-    for (var i = 0; i < $scope.matchRequestList.length; i++) {
-      $scope.matchRequestList[i].sufficientPoints = checkPoints(($scope.matchRequestList[i].bet));
-    }
-  });
+      for (var i = 0; i < $scope.matchRequestList.length; i++) {
+        $scope.matchRequestList[i].sufficientPoints = checkPoints(($scope.matchRequestList[i].bet));
+      }
+    });
+  }
+  $scope.checkPending();
 
   $scope.accept = function(request_id) {
     var data = $scope.data.value.data.rows;
@@ -31,20 +34,31 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$root
         break;
       }
     }
-      
-    $matchFactory.acceptMatch(acceptRequest.match_id, request_id, $rootScope.user_id, parseInt($rootScope.mlg_points) - parseInt(acceptRequest.bet));
 
-    $location.path('/users/user')
+    $matchFactory.changeMatchStatus(2, acceptRequest.match_id, $rootScope.user_id, parseInt($rootScope.mlg_points) - parseInt(acceptRequest.bet), function() {
+      localStorage['mlg_points'] = parseInt($rootScope.mlg_points) - parseInt(acceptRequest.bet);
+      $rootScope.updateUser();
+      $scope.checkPending();
+    });
   };
 
   $scope.cancel = function(request_id) {
-    console.log('denied!', request_id);
-    // var data = $scope.data.value.data.rows;
+    var data = $scope.data.value.data.rows;
+    var acceptRequest;
+
+    for (var i = 0; i < data.length; i++) {
+      if (request_id == data[i].id) {
+        acceptRequest = data[i];
+        break;
+      }
+    }
+
+    $matchFactory.changeMatchStatus(0, acceptRequest.match_id, $rootScope.user_id, parseInt($rootScope.mlg_points) + parseInt(acceptRequest.bet), function() {
+      localStorage['mlg_points'] = parseInt($rootScope.mlg_points) + parseInt(acceptRequest.bet);
+      $rootScope.updateUser();
+      $scope.checkPending();
+    });
     
-    // for (var key in data) {
-    //   if (!data.hasOwnProperty(key)) continue;
-    //   var obj = data[key];
-    // }
   };
 
 }]);

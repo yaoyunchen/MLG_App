@@ -125,7 +125,7 @@ setInterval(function() {
 
   });
 
-}, 5000); // every 5 seconds
+}, 600000); // every 5 seconds
 
 ///////////////////////////////////////
             //END HERE//
