@@ -96,7 +96,6 @@ setInterval(function() {
       SET status = 0, update_time = CURRENT_TIMESTAMP
       WHERE create_time < CURRENT_TIMESTAMP - (15 * INTERVAL '1 MINUTE')
       AND status = 1;
-<<<<<<< 87e75889a9ecfdfa0e6a45edd474d5e899d1538b
 
       UPDATE Users
       SET mlg_points = mlg_points + COALESCE((SELECT SUM(matchrequests.bet)
@@ -125,36 +124,6 @@ setInterval(function() {
   });
 }, 60000); // every 60 seconds
 
-=======
-
-      UPDATE Users
-      SET mlg_points = mlg_points + COALESCE((SELECT SUM(matchrequests.bet)
-      FROM matchrequests
-      WHERE matchrequests.create_time < CURRENT_TIMESTAMP - (15 * INTERVAL '1 MINUTE')
-      AND matchrequests.status IN (1,2)
-      AND users.id = matchrequests.user_id),0);`,
-    function(err, result) {
-      done();
-      if(err) {
-        return console.error('error running query', err);
-      }
-      client.query(
-      `UPDATE matchrequests
-      SET status = -1, update_time = CURRENT_TIMESTAMP
-      WHERE create_time < CURRENT_TIMESTAMP - (15 * INTERVAL '1 MINUTE')
-      AND status IN (1,2);`, 
-      function(err, result) {
-        done();
-        if(err) {
-          return console.error('error running query', err);
-        }       
-        console.log("Expired Match Requests Older Than 15 Minutes" + counter);
-      });    
-    });
-  });
-}, 60000); // every 60 seconds
-
->>>>>>> interval check to end and payout matches
 //Updating MatchRequest Table
 setInterval(function() {
   // (1) updating for ending matches
