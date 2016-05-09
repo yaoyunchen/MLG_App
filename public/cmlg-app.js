@@ -69,6 +69,7 @@ cMLGApp.config(["$routeProvider", function($routeProvider) {
   .when('/match/pending', {
     resolve: {
       "check": ["$location", "$rootScope", function($location, $rootScope){
+        $rootScope.updateUser();
         if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
           $location.path('/login');
         }
@@ -299,40 +300,53 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
 
 }]);
 
-angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$location', '$users', '$matchFactory', '$timeout', function($scope, $location, $users, $matchFactory, $timeout) {
+angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$rootScope', '$matchFactory', '$location', function($scope, $rootScope, $matchFactory, $location) {
 
   $scope.pageClass = "page-match-pending";
 
-  $scope.showMatchRequests = function() {
-    $timeout(function(){
-      if($scope.data !== undefined){
-        if($scope.data.value != undefined){
-          $scope.matchRequestList = $scope.data.value.data.rows
-        }
+  var checkPoints = function(bet_points) {
+    if (parseInt($rootScope.mlg_points) - parseInt(bet_points) < 0) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  $scope.data = $matchFactory.get($rootScope.user_id, function() {
+    if($scope.data !== undefined){
+      if($scope.data.value !== undefined){
+        $scope.matchRequestList = $scope.data.value.data.rows;
       }
-    }, 200);
-
-  }
-
-  $scope.data = $matchFactory.get(localStorage['user_id'], $scope.showMatchRequests());
+    }
+    for (var i = 0; i < $scope.matchRequestList.length; i++) {
+      $scope.matchRequestList[i].sufficientPoints = checkPoints(($scope.matchRequestList[i].bet));
+    }
+  });
 
   $scope.accept = function(request_id) {
     var data = $scope.data.value.data.rows;
-    
-    for (var key in data) {
-      if (!data.hasOwnProperty(key)) continue;
-      var obj = data[key];
-    }
+    var acceptRequest;
 
+    for (var i = 0; i < data.length; i++) {
+      if (request_id == data[i].id) {
+        acceptRequest = data[i];
+        break;
+      }
+    }
+      
+    $matchFactory.acceptMatch(acceptRequest.match_id, request_id, $rootScope.user_id, parseInt($rootScope.mlg_points) - parseInt(acceptRequest.bet));
+
+    $location.path('/users/user')
   };
 
   $scope.cancel = function(request_id) {
-    var data = $scope.data.value.data.rows;
+    console.log('denied!', request_id);
+    // var data = $scope.data.value.data.rows;
     
-    for (var key in data) {
-      if (!data.hasOwnProperty(key)) continue;
-      var obj = data[key];
-    }
+    // for (var key in data) {
+    //   if (!data.hasOwnProperty(key)) continue;
+    //   var obj = data[key];
+    // }
   };
 
 }]);
@@ -488,7 +502,7 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
     var pieSeries = [];
     
     for (var i = 0; i < matchData.length; i++) {
-      series = matchData[i].username1 + " VS " + matchData[i].username2;
+      series = matchData[i].id + ": " + matchData[i].username1 + " VS " + matchData[i].username2;
       pieSeries.push(series);
     }
 
@@ -505,7 +519,7 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
         id: matchData[i].id,
         betPercent: matchData[i].betPercent,
         betAmt: matchData[i].bet,
-        tooltip: matchData[i].username1 + " VS " + matchData[i].username2
+        tooltip: matchData[i].id + ": " + matchData[i].username1 + " VS " + matchData[i].username2
       })
     }
 
@@ -522,13 +536,7 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
       tooltip: 'Current Points'
     })
 
-    var max = 5;
-
-    if (sortedData.length < max) {
-      max = sortedData.length;
-    }
-
-    for (var i = 0; i < max; i++) {
+    for (var i = 0; i < 4; i++) {
       var data = {
         x: sortedData[i].id, 
         y: [sortedData[i].betAmt],
@@ -537,20 +545,20 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
       pieData.push(data);
     }
 
-    if (sortedData.length > max) {
+    if (sortedData.length > 4) {
       total_x = [];
       total_y = 0;
-      for (var i = max - 1; i < sortedData.length; i++) {
+      for (var i = 4 - 1; i < sortedData.length; i++) {
         total_x.push(sortedData[i].id)
         total_y += sortedData[i].betAmt
       }
-      pieData.push({
+      $scope.otherData = {
         x: total_x,
         y: [total_y],
         tooltip: 'Other'
-      })
+      }
+      pieData.push($scope.otherData)
     }
-
     return pieData;
   };
 
@@ -561,7 +569,6 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
 
         if (matches.value.data.rowCount > 0) {
           $scope.matchData = matches.value.data.rows;
-
           // Determine total points and take care of null data.
           for (var i = 0; i < $scope.matchData.length; i++) {
             $scope.user.total_mlg_points += $scope.matchData[i].bet;
@@ -583,7 +590,7 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
           for (var i = 0; i < $scope.matchData.length; i++) {
             $scope.matchData[i].betPercent = parseFloat((100 * ($scope.matchData[i].bet / $scope.user.total_mlg_points)).toFixed(4));
           }
-          
+         
           $scope.data = {
             series: getPieSeries($scope.matchData),
             data: getPieData($scope.matchData)
@@ -608,11 +615,10 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
     var query = $document[0].getElementsByClassName("ac-tooltip");
     var wrappedClass = angular.element(query);
     $scope.currentPie = wrappedClass[0].textContent;
-
     for (var i = 0; i < $scope.data.data.length; i++) {
       if ($scope.data.data[i].tooltip == $scope.currentPie) {
         var matchID = $scope.data.data[i].x;
-
+        
         if (matchID != -1) {
           // current matches
           if (typeof(matchID) == 'number') {
@@ -622,16 +628,17 @@ angular.module('cMLGApp').controller('userController', ['$scope', '$rootScope', 
                 $scope.singlePieData = $scope.matchData[i];
               }
             }
-          } else {
+          } else if (typeof(matchID) == 'object'){
             $scope.singlePieData = undefined;
             $scope.multiPieData = [];
-            for(var i = 0; i < matchID.length; i++) {
-              for (var j = 0; j < $scope.matchData.length; j++) {
-                if (matchID[i] == $scope.matchData[j].id) {
-                  $scope.multiPieData.push($scope.matchData[i]);
+        
+            for(var j = 0; j < matchID.length; j++) {
+              for (var k = 0; k < $scope.matchData.length; k++) {
+                if (matchID[j] == $scope.matchData[k].id) {
+                  $scope.multiPieData.push($scope.matchData[k]);
                 }
               }
-            }
+             }
           }
         } else {
           // current points
@@ -948,7 +955,34 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
         }
       })
       return deferred.promise.$$state;
+    },
+
+    getMatchRequests: function(match_id, callback) {
+      var deferred = $q.defer();
+
+      var url = '/db/matchrequests/'+ match_id;
+
+      $http.get(url).then(function(res) {
+        deferred.resolve(res);
+        if (callback) {
+          callback();
+        }
+      });
+      return deferred.promise.$$state;
+    },
+
+    // Accept Match
+    acceptMatch: function(match_id, request_id, user_id, mlg_points) {
+      var deferred = $q.defer();
+
+      var url = '/db/matches/accept/' + match_id + '/' + request_id + '/' + user_id + '/' + mlg_points;
+      console.log(url)
+      $http.post(url).then(function(res) {
+        deferred.resolve(res);
+      });
+      return deferred.promise.$$state;
     }
+
   };
 }]);
 var cMLGApp = angular.module('cMLGApp');

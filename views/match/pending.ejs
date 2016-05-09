@@ -1,11 +1,70 @@
-<div class="row" ng-controller="matchPendingController">
-  <div class="col-title">
-    <h3>
-      =This is the pending match page=
-    </h3>
+<div class="row match-pending" 
+  ng-controller="matchPendingController"
+>
+  <div class="col-sm-12 col-title">
+    <h1>Pending Matches</h1>
   </div>
-  <br/>
-  <!-- pending match requests list starts here -->
+
+  <!-- PENDING MATCH START -->
+  <div class="row pending-matches">
+    <table class="table table-hover table-borderless">
+      <thead>
+        <tr>
+          <th>Champion</th>
+          <th>Players</th>
+          <th>Bet</th>
+          <th>Status</th>
+          <th>Time Left</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="request in matchRequestList">
+          <td>
+            <div>
+              <img class="selectChampIcon" ng-src="{{ request.image }}"/>
+            </div>
+            <div>
+              <small class="text-muted">{{request.champion_key}}</small>
+            </div>
+          </td>
+          <td>
+            <p>{{ request.username1 }}</p>
+            <p>VS</p> 
+            <p>{{ request.username2 }}</p>
+          </td>
+          <td>
+            <p>{{ request.bet }} pts </p>
+            <p>on</p>
+            <p>{{ request.bettype_str }}</p>
+          </td>
+          <td>
+            <p>{{ request.status_str }}</p>
+          </td>
+          <td>
+            <p>Time Left: {{request.time_left.minutes}}:{{request.time_left.seconds}}</p>
+
+          </td>
+          <td>
+            <button class="btn btn-success" 
+              ng-show="request.status==1" 
+              ng-click="accept(request.id)"
+              ng-disabled="!request.sufficientPoints"
+            >ACCEPT</button>
+            <p class="text-muted" ng-show="!request.sufficientPoints">
+              Insufficient Points!
+            </p>
+            <button class="btn btn-danger"
+              ng-show="request.status==2" 
+              ng-click="cancel(request.id)"
+            >CANCEL</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+<!-- 
   <div class="col-sm-12" ng-repeat="request in matchRequestList">
     <div class="col-sm-12 pending-match-rows">
       <div class="col-sm-2">
@@ -41,5 +100,6 @@
         <button ng-show="request.status==2" ng-click="cancel(request.id)">CANCEL</button>
       </div>
     </div>
-  </div>
+  </div> -->
+  <!-- PENDING MATCH END -->
 </div>

@@ -58,6 +58,7 @@ img.img-signup-icon:hover {
 .selectChampIcon {
   max-width:        100%;
   max-height:       100%;
+  border-radius:    50%;
 }
 
 .pending-match-rows {
@@ -107,7 +108,7 @@ div.match-info > div {
   max-height:       65%;
 }
 
-.multi-data > table {
+.pending-matches > table, .multi-data > table {
   table-layout:     fixed;
   word-wrap:        break-word;
   margin:           auto;
@@ -115,18 +116,33 @@ div.match-info > div {
   margin-bottom:    20px;
 }
 
-.multi-data > td {
+.pending-matches > td, .multi-data > td {
   width:            10%;
   border:           none;
 }
 
-.multi-data > table > thead > tr > th {
+.pending-matches > table > thead > tr > th, .multi-data > table > thead > tr > th {
+  vertical-align:   middle;
+  text-align:       center;
+  background-color: #212121;
+  color:            #9d9d9d;
+}
+
+.pending-matches > table > thead > tr > th, .multi-data > table > thead > tr > th {
   vertical-align:   middle;
   text-align:       center;
 }
 
-.multi-data > table > tbody > tr > tr > p {
+.pending-matches > table > tbody > tr > td, .multi-data > table > tbody > tr > td  {
+  vertical-align:   middle;
+}
+
+.pending-matches > table > tbody > tr > td > p, .multi-data > table > tbody > tr > td > p {
   margin-bottom:    5px;
+}
+
+.pending-matches > table > tbody > tr > td > p {
+  font-weight:      bold;
 }
 
 .bold {

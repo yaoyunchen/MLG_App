@@ -91,6 +91,33 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
         }
       })
       return deferred.promise.$$state;
+    },
+
+    getMatchRequests: function(match_id, callback) {
+      var deferred = $q.defer();
+
+      var url = '/db/matchrequests/'+ match_id;
+
+      $http.get(url).then(function(res) {
+        deferred.resolve(res);
+        if (callback) {
+          callback();
+        }
+      });
+      return deferred.promise.$$state;
+    },
+
+    // Accept Match
+    acceptMatch: function(match_id, request_id, user_id, mlg_points) {
+      var deferred = $q.defer();
+
+      var url = '/db/matches/accept/' + match_id + '/' + request_id + '/' + user_id + '/' + mlg_points;
+      console.log(url)
+      $http.post(url).then(function(res) {
+        deferred.resolve(res);
+      });
+      return deferred.promise.$$state;
     }
+
   };
 }]);

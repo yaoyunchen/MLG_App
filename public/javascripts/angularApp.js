@@ -69,6 +69,7 @@ cMLGApp.config(function($routeProvider) {
   .when('/match/pending', {
     resolve: {
       "check": function($location, $rootScope){
+        $rootScope.updateUser();
         if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
           $location.path('/login');
         }
