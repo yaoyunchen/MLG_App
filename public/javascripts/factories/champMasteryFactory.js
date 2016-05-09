@@ -10,11 +10,24 @@ cMLGApp.factory('$masteryFactory', ['$http', '$q', function($http, $q) {
 
       $http.get(url).then(function(res) {
         // success.
-        deferred.resolve(res);
-      }).then(function(res) {
-        // fail.
-      }).finally(function() {
-        // do this regardless of success/fail.
+        if(res.data.body===""){
+          var json = {
+            "playerId" : summonerID,
+            "championId" : championID,
+            "championLevel" : 0,
+            "championPoints" : 0,
+            "lastPlayTime" : 0,
+            "championPointsSinceLastLevel" : 0,
+            "championPointsUntilNextLevel" : 0,
+            "chestGranted" : false
+          }
+        }else{
+          var json = JSON.parse(res.data.body);
+        }
+        deferred.resolve(json);
+        if(callback){
+          callback();
+        }
       });
       return deferred.promise.$$state;
     }

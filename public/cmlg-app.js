@@ -67,13 +67,13 @@ cMLGApp.config(["$routeProvider", function($routeProvider) {
     controller  : 'matchCreateController'
   })
   .when('/match/pending', {
-    // resolve: {
-    //   "check": function($location, $rootScope){
-    //     if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
-    //       $location.path('/login');
-    //     }
-    //   }
-    // },
+    resolve: {
+      "check": ["$location", "$rootScope", function($location, $rootScope){
+        if ($rootScope.username === undefined || $rootScope.username === 'undefined'){
+          $location.path('/login');
+        }
+      }]
+    },
     templateUrl : 'match/pending.ejs',
     controller  : 'matchPendingController'
   })
@@ -168,9 +168,9 @@ cMLGApp.controller('mainController', ['$scope', '$rootScope', '$location', funct
 
 
 }]);
-angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champions', '$matchFactory', '$location', '$users', '$masteryFactory', function($scope, $champions, $matchFactory, $location, $users, $masteryFactory) {
+angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champions', '$matchFactory', '$location', '$users', '$masteryFactory', '$summoner', function($scope, $champions, $matchFactory, $location, $users, $masteryFactory, $summoner) {
   $scope.pageClass = "page-createMatch";
-  $scope.betType = "closeTrue";
+  $scope.betType = 0;
   
   $scope.min = function() {
     $scope.bet = 100;
@@ -181,7 +181,7 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
   }
   $scope.userData = {};
   $scope.opponentData = {};
-
+  $scope.region = 'na';
   $scope.loading = false;
   $scope.userExists;
   $scope.matchType = 1;
@@ -229,47 +229,57 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
         $scope.selectedChampion = {};
       }
     }
-  }
+  };
+
+  //creating match
   $scope.createMatchRequest = function() {
-    //creating match requests
-    //$matchFactory.post(localStorage['user_id'], $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
-    //$matchFactory.post($scope.user_id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType);
-    
-    //creating match
-    
-    (function(username,callback) {
+    // creating match requests
+    (function(){
       $scope.userData = $users.checkUsername(localStorage['username'], function() {
-        var my_id = $scope.userData.value.data.rows[0].summoner_id;
-        $scope.user_points = $masteryFactory.getChampion('na', my_id, $scope.selectedChampion.id);
-        //$scope.user_last_game_id;
-
+        //get summoner id for user
+        var userSummonerID = $scope.userData.value.data.rows[0].summoner_id;
+        //get champion mastery data by champion_id and summoner_id for user
+        $scope.userMasteryData = $masteryFactory.getChampion($scope.region, userSummonerID, $scope.selectedChampion.id, function() {
+          var userChampionPoints = $scope.userMasteryData.value.championPoints;
+          //get 10 recent league games by summoner_id for user
+          $scope.userRecentGameData = $summoner.getRecentGames($scope.region, userSummonerID, function() {
+            var userLastGameId = $scope.userRecentGameData.value.data.games[0].gameId;
+            $scope.opponentData = $users.checkUsername($scope.matchInviteForm.summonerName.$$rawModelValue, function(){
+              //get summoner id for opponent
+              var opponentSummonerID = $scope.opponentData.value.data.rows[0].summoner_id;
+              //get champion mastery data by champion_id and summoner_id for opponent
+              $scope.opponentMasteryData = $masteryFactory.getChampion($scope.region, opponentSummonerID, $scope.selectedChampion.id, function() {
+                var opponentChampionPoints = $scope.opponentMasteryData.value.championPoints;
+                //get 10 recent league games by summoner_id for opponent
+                $scope.opponentRecentGameData = $summoner.getRecentGames($scope.region, opponentSummonerID, function() {
+                  var createMatch_str = ""+localStorage['user_id']+"/"
+                  +$scope.tournament_id+"/"
+                  +userChampionPoints+"/"
+                  + 0 +"/"
+                  +userLastGameId+"/"
+                  +opponentChampionPoints+"/"
+                  + 0 +"/"
+                  +$scope.opponentRecentGameData.value.data.games[0].gameId+"/"
+                  +$scope.user_likes+"/"
+                  +$scope.opponent_likes+"/"
+                  + 1 +"/"
+                  +$scope.bet*2;
+                  
+                  var matchid = $matchFactory.createMatch(createMatch_str, function(res){
+                    console.log(res.data.rows[0].id);
+                    $matchFactory.post(localStorage['user_id'], res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,2);
+                    $matchFactory.post(2, res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,1);
+                    $location.path('/match/pending');    
+                  });
+                });
+              });   
+            });
+          });          
+        });
       });
-
-      $scope.opponentData = $users.checkUsername($scope.matchInviteForm.summonerName.$$rawModelValue, function(){
-        var opponent_id = $scope.opponentData.value.data.rows[0].summoner_id;
-        //$scope.opponent_points = $masteryFactory.getChampion('na', opponent_id, $scope.selectedChampion.id);
-        //scope.opponent_last_game_id;
-
-      });
-        
-    })();    
+    })();
 
 
-    // var createMatch_str = ""+localStorage['user_id']+"/"
-    // +$scope.tournament_id+"/"+
-    // +$scope.user_points+"/"
-    // + 0 +"/"
-    // +$scope.user_last_game_id+"/"
-    // +$scope.opponent_points+"/"
-    // + 0 +"/"
-    // +$scope.opponent_last_game_id+"/"
-    // +$scope.user_likes+"/"
-    // +$scope.opponent_likes+"/"
-    // + 1 +"/"
-    // +$scope.bet*2;
-    
-    // $matchFactory.createMatch(createMatch_str);
-    // $location.path('/');
   }
 
   $scope.setBrowseChamps = function() {
@@ -298,7 +308,6 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$loca
       if($scope.data !== undefined){
         if($scope.data.value != undefined){
           $scope.matchRequestList = $scope.data.value.data.rows
-          console.log($scope.data.value.data.rows);
         }
       }
     }, 200);
@@ -308,25 +317,21 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$loca
   $scope.data = $matchFactory.get(localStorage['user_id'], $scope.showMatchRequests());
 
   $scope.accept = function(request_id) {
-    console.log(request_id);
     var data = $scope.data.value.data.rows;
     
     for (var key in data) {
       if (!data.hasOwnProperty(key)) continue;
       var obj = data[key];
-      console.log(obj);
     }
 
   };
 
   $scope.cancel = function(request_id) {
-    console.log(request_id);
     var data = $scope.data.value.data.rows;
     
     for (var key in data) {
       if (!data.hasOwnProperty(key)) continue;
       var obj = data[key];
-      console.log(obj);
     }
   };
 
@@ -804,11 +809,24 @@ cMLGApp.factory('$masteryFactory', ['$http', '$q', function($http, $q) {
 
       $http.get(url).then(function(res) {
         // success.
-        deferred.resolve(res);
-      }).then(function(res) {
-        // fail.
-      }).finally(function() {
-        // do this regardless of success/fail.
+        if(res.data.body===""){
+          var json = {
+            "playerId" : summonerID,
+            "championId" : championID,
+            "championLevel" : 0,
+            "championPoints" : 0,
+            "lastPlayTime" : 0,
+            "championPointsSinceLastLevel" : 0,
+            "championPointsUntilNextLevel" : 0,
+            "chestGranted" : false
+          }
+        }else{
+          var json = JSON.parse(res.data.body);
+        }
+        deferred.resolve(json);
+        if(callback){
+          callback();
+        }
       });
       return deferred.promise.$$state;
     }
@@ -843,8 +861,8 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
 
   return {
     //create match request
-    post: function(username, champion_id, champion_key, bet, betType, matchType) {
-      var url = '/db/post/match_request/'+username+'/'+champion_id+'/'+champion_key+'/'+bet+'/'+betType+'/'+matchType;
+    post: function(user_id, match_id, champion_id, champion_key, bet, betType, matchType, status) {
+      var url = '/db/post/match_request/'+user_id+'/'+match_id+'/'+champion_id+'/'+champion_key+'/'+bet+'/'+betType+'/'+matchType+'/'+status;
       $http.post(url).then(function(res) {
         //success
       }).then(function(res) {
@@ -855,16 +873,17 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
       })
     },
     //create match
-    createMatch: function(user_id, tournament_id, user_points, user_total_games_played, user_last_game_id, opponent_points, opponent_total_games_played, opponent_last_game_id, user_likes, opponent_likes, status, pot, end_time) {
-      var url = '/db/post/match_request/';
+    createMatch: function(data_str, callback) {
+      var deferred = $q.defer();
+      var url = '/db/post/match/' + data_str;
       $http.post(url).then(function(res) {
         //success
-      }).then(function(res) {
-        // fail.
+        if(callback){
+          callback(res);
+        }
         deferred.resolve(res);
-      }).finally(function() {
-        // do this regardless of success/fail.
       })
+      return deferred.promise.$$state;
     },
 
     //get all active match requests
@@ -966,7 +985,20 @@ cMLGApp.factory('$summoner', ['$http', '$q', function($http, $q) {
           }
         }
       });
+      return deferred.promise.$$state;
+    },
+    getRecentGames: function(region, summonerID, callback) {
+      var deferred = $q.defer();
 
+      var url = '/search/' + region +'/' + summonerID + '/recent' + JSONCALLBACK;
+      $http.get(url)
+      .then(function(res) {
+        deferred.resolve(res);
+      
+        if(callback){
+          callback();
+        }
+      });
       return deferred.promise.$$state;
     }
   };

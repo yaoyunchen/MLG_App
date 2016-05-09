@@ -4,8 +4,8 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
 
   return {
     //create match request
-    post: function(username, champion_id, champion_key, bet, betType, matchType) {
-      var url = '/db/post/match_request/'+username+'/'+champion_id+'/'+champion_key+'/'+bet+'/'+betType+'/'+matchType;
+    post: function(user_id, match_id, champion_id, champion_key, bet, betType, matchType, status) {
+      var url = '/db/post/match_request/'+user_id+'/'+match_id+'/'+champion_id+'/'+champion_key+'/'+bet+'/'+betType+'/'+matchType+'/'+status;
       $http.post(url).then(function(res) {
         //success
       }).then(function(res) {
@@ -16,16 +16,17 @@ cMLGApp.factory('$matchFactory', ['$http', '$q', function($http, $q) {
       })
     },
     //create match
-    createMatch: function(user_id, tournament_id, user_points, user_total_games_played, user_last_game_id, opponent_points, opponent_total_games_played, opponent_last_game_id, user_likes, opponent_likes, status, pot, end_time) {
-      var url = '/db/post/match_request/';
+    createMatch: function(data_str, callback) {
+      var deferred = $q.defer();
+      var url = '/db/post/match/' + data_str;
       $http.post(url).then(function(res) {
         //success
-      }).then(function(res) {
-        // fail.
+        if(callback){
+          callback(res);
+        }
         deferred.resolve(res);
-      }).finally(function() {
-        // do this regardless of success/fail.
       })
+      return deferred.promise.$$state;
     },
 
     //get all active match requests

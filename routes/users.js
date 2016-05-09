@@ -101,53 +101,60 @@ router.get('/db/search/users/login/:email/:password', function(req, res) {
 });
 
 //create match requests
-router.post('/db/post/match_request/:username/:champion_id/:champion_key/:bet/:betType/:matchType', function(req, res) {
-  var username = req.params.username;
+router.post('/db/post/match_request/:user_id/:match_id/:champion_id/:champion_key/:bet/:betType/:matchType/:status', function(req, res) {
+  var user_id = req.params.user_id;
+  var match_id = req.params.match_id;
   var champion_id = req.params.champion_id;
   var champion_key = req.params.champion_key;
   var bet = req.params.bet;
   var betType = req.params.betType;
   var matchType = req.params.matchType;
+  var status = req.params.status;
   pg.connect(conString, function(err, client, done) {
     if(err) {
       return console.error('error fetching client from pool', err);
     }
-    //creating Users table
-    var query = "INSERT INTO MatchRequests (user_id, champion_id, champion_key, match_type, status, bet, bettype) \
-    VALUES ('"+ username + "'," + champion_id + "," + champion_key + "," + matchType + ",0," + bet + "," + betType + ");";
+    //creating match request
+    var query = "INSERT INTO MatchRequests (user_id, match_id, champion_id, champion_key, match_type, status, bet, bettype) VALUES ('"+ user_id + "'," + match_id + "," + champion_id + ",'" + champion_key + "'," + matchType + "," + status + "," + bet + "," + betType + ");";
     
     client.query(query, function(err, result) {
       done();
       if(err) {
         return console.error('error running query', err);
       }
-      console.log("done updating Users Table");
+      console.log("done creating match request");
     });
   });
 })
 
 //create match
-router.post('/db/post/match/', function(req, res) {
-  var username = req.params.username;
-  var champion_id = req.params.champion_id;
-  var champion_key = req.params.champion_key;
-  var bet = req.params.bet;
-  var betType = req.params.betType;
-  var matchType = req.params.matchType;
+router.post('/db/post/match/:user_id/:tournament_id/:user_points/:user_total_games_played/:user_last_game_id/:opponent_points/:opponent_total_games_played/:opponent_last_game_id/:user_likes/:opponent_likes/:status/:pot', function(req, res) {
+  var user_id = req.params.user_id;
+  var tournament_id = req.params.tournament_id; 
+  var user_points = req.params.user_points; 
+  var user_total_games_played = req.params.user_total_games_played; 
+  var user_last_game_id = req.params.user_last_game_id; 
+  var opponent_points = req.params.opponent_points; 
+  var opponent_total_games_played = req.params.opponent_total_games_played; 
+  var opponent_last_game_id = req.params.opponent_last_game_id; 
+  var user_likes = req.params.user_likes; 
+  var opponent_likes = req.params.opponent_likes; 
+  var status = req.params.status; 
+  var pot = req.params.pot;
 
   pg.connect(conString, function(err, client, done) {
     if(err) {
       return console.error('error fetching client from pool', err);
     }
-    //creating Users table
-    var query = "INSERT INTO Matches (user_id, tournament_id, user_points, user_total_games_played, user_last_game_id, opponent_points, opponent_total_games_played, opponent_last_game_id, user_likes, opponent_likes, status, pot, end_time) VALUES ();";
-    
-    client.query(query, function(err, result) {
+    //creating match
+    var query = "INSERT INTO Matches (user_id, tournament_id, user_points, user_total_games_played, user_last_game_id, opponent_points, opponent_total_games_played, opponent_last_game_id, user_likes, opponent_likes, status, pot, end_time) VALUES ("+user_id+","+tournament_id+","+user_points+","+user_total_games_played+","+user_last_game_id+","+opponent_points+","+opponent_total_games_played+","+opponent_last_game_id+","+user_likes+","+opponent_likes+","+status+","+pot+",CURRENT_TIMESTAMP + (1440 * INTERVAL '1 MINUTE')) RETURNING id;";
+      client.query(query, function(err, result) {
       done();
       if(err) {
         return console.error('error running query', err);
       }
-      console.log("done updating Users Table");
+      console.log("done creating match");
+      res.json(result);
     });
   });
 })

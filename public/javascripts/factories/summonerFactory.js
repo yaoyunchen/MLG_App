@@ -32,7 +32,20 @@ cMLGApp.factory('$summoner', ['$http', '$q', function($http, $q) {
           }
         }
       });
+      return deferred.promise.$$state;
+    },
+    getRecentGames: function(region, summonerID, callback) {
+      var deferred = $q.defer();
 
+      var url = '/search/' + region +'/' + summonerID + '/recent' + JSONCALLBACK;
+      $http.get(url)
+      .then(function(res) {
+        deferred.resolve(res);
+      
+        if(callback){
+          callback();
+        }
+      });
       return deferred.promise.$$state;
     }
   };

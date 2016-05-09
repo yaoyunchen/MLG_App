@@ -7,7 +7,6 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$loca
       if($scope.data !== undefined){
         if($scope.data.value != undefined){
           $scope.matchRequestList = $scope.data.value.data.rows
-          console.log($scope.data.value.data.rows);
         }
       }
     }, 200);
@@ -17,25 +16,21 @@ angular.module('cMLGApp').controller('matchPendingController', ['$scope', '$loca
   $scope.data = $matchFactory.get(localStorage['user_id'], $scope.showMatchRequests());
 
   $scope.accept = function(request_id) {
-    console.log(request_id);
     var data = $scope.data.value.data.rows;
     
     for (var key in data) {
       if (!data.hasOwnProperty(key)) continue;
       var obj = data[key];
-      console.log(obj);
     }
 
   };
 
   $scope.cancel = function(request_id) {
-    console.log(request_id);
     var data = $scope.data.value.data.rows;
     
     for (var key in data) {
       if (!data.hasOwnProperty(key)) continue;
       var obj = data[key];
-      console.log(obj);
     }
   };
 
