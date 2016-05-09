@@ -64,42 +64,66 @@ app.use(function(err, req, res, next) {
 ///////////////////////////////////////
 //setting up period database checking//
 ///////////////////////////////////////
-// providing database data
-// var http = require('http');
-// var pg = require('pg');
-// var dbKey = require('./env.js');
-// var conString = dbKey();
-// //for debugging only
-// var counter = 0;
-// setInterval(function() {
-//   //for debugging only
-//   counter ++;
-//   console.log('the counter is: ' + counter);
+//providing database data
+var http = require('http');
+var pg = require('pg');
+var dbKey = require('./env.js');
+var conString = dbKey();
+//for debugging only
+var counter = 0;
+setInterval(function() {
+  //for debugging only
+  counter ++;
+  console.log('the counter is: ' + counter);
 
-//   //code
-//   var username = counter;
-//   var champion = 1;
-//   var bet = 1;
-//   var betType = 1;
-//   var matchType = 1;
-//   pg.connect(conString, function(err, client, done) {
-//     if(err) {
-//       return console.error('error fetching client from pool', err);
-//     }
-//     //creating Users table
-//     var query = "INSERT INTO MatchRequests (user_id, champion_id, match_type, status, bet, bettype) \
-//     VALUES ('"+ username + "'," + champion + "," + matchType + ",0," + bet + "," + betType + ");";
+  //code
+  var username = counter;
+  var champion = 1;
+  var bet = 1;
+  var betType = 1;
+  var matchType = 1;
+  pg.connect(conString, function(err, client, done) {
+    if(err) {
+      return console.error('error fetching client from pool', err);
+    }
     
-//     client.query(query, function(err, result) {
-//       done();
-//       if(err) {
-//         return console.error('error running query', err);
-//       }
-//       console.log("done updating Users Table x" + counter);
-//     });
-//   });
+    // (1) cancel matches that originated fom match_requests that has expired
+    // (2) refund mlg_points to user from expired match_requests
+    // (3) expire match_request older than 15 minutes
+    client.query(
+      `UPDATE Matches
+      SET status = 0, update_time = CURRENT_TIMESTAMP
+      WHERE create_time < CURRENT_TIMESTAMP - (15 * INTERVAL '1 MINUTE')
+      AND status = 1;
 
-// }, 5000); // every 5 seconds
+      UPDATE Users
+      SET mlg_points = mlg_points + COALESCE((SELECT SUM(matchrequests.bet)
+      FROM matchrequests
+      WHERE matchrequests.create_time < CURRENT_TIMESTAMP - (15 * INTERVAL '1 MINUTE')
+      AND matchrequests.status IN (1,2)
+      AND users.id = matchrequests.user_id),0);`,
+    function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      client.query(
+      `UPDATE matchrequests
+      SET status = -1, update_time = CURRENT_TIMESTAMP
+      WHERE create_time < CURRENT_TIMESTAMP - (15 * INTERVAL '1 MINUTE')
+      AND status IN (1,2);`, 
+      function(err, result) {
+        done();
+        if(err) {
+          return console.error('error running query', err);
+        }       
+        console.log("Expired Match Requests Older Than 15 Minutes" + counter);
+      });    
+    });
+
+
+  });
+
+}, 5000); // every 5 seconds
 
 ///////////////////////////////////////
             //END HERE//

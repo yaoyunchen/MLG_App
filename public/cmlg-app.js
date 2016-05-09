@@ -268,7 +268,7 @@ angular.module('cMLGApp').controller('matchCreateController', ['$scope', '$champ
                   var matchid = $matchFactory.createMatch(createMatch_str, function(res){
                     console.log(res.data.rows[0].id);
                     $matchFactory.post(localStorage['user_id'], res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,2);
-                    $matchFactory.post(2, res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,1);
+                    $matchFactory.post($scope.opponentData.value.data.rows[0].id, res.data.rows[0].id, $scope.selectedChampion.id, $scope.selectedChampion.key, $scope.bet, $scope.betType, $scope.matchType,1);
                     $location.path('/match/pending');    
                   });
                 });
