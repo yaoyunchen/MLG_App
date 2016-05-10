@@ -29,7 +29,8 @@
       </div>
       <span ng-if="signupForm.signupName.$$rawModelValue === undefined || signupForm.signupName.$$rawModelValue == ''">
         <small class="text-muted">
-          Please use your League of Legends summoner in game name.
+          Please use your League of Legends summoner in game name <br/>
+          We will do Icon Validations
         </small>
       </span>
       <span class="spinner" ng-hide="!loading">
@@ -111,7 +112,7 @@
           required
         />
       </div>
-      <small class="text-muted">
+      <small class="bold alert-msg">
         Please DO NOT use the same password as your League of Legends account.
       </small>
       
