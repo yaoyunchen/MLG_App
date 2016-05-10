@@ -178,7 +178,6 @@ router.get('/db/get/match_request/active/:user_id', function(req, res) {
     JOIN Matches m1 on r2.match_id = m1.id \
     JOIN Users u2 on r2.user_id = u2.id \
     WHERE r1.user_id = " + user_id + " AND r1.match_id = m1.id AND r1.user_id != r2.user_id AND r1.status > 0 AND  r2.status <> r1.status;";
-    console.log(query)
   pg.connect(conString, function(err, client, done) {
     var handleError = function(err) {
       // no error occurred, continue with the request
