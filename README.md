@@ -93,14 +93,24 @@ After signing up with cMLG App, users can challenge other registered users to se
   *** Will have timer of expiring matches.
 ```
 
-## FEATURES
-
-### Current
-
-### Planned
-
+## FUTURE
+* View Match History
+  * See how well you do and have a record of results
+* Better user profiles
+  * Your history of matches, current bets, frequently challenged users, profile icons, edit profile
+  * Top champs (mastery)
+* Match page (not just from user profiles)
+  * View selected match information 
+* View and bet on random / selected matches
+  * MOAR BETS 
+* Tournaments
+  * Challenge up to 3 oher uers to see who's the best  
+* Point rewards, achievements
+  * Titles, icons for doing well
 
 ## CONTRIBUTORS
-
+* Andy Kwan (League IGN: zelthrox, github: https://github.com/Zelthrox)
+* Andy Yao (League IGN: cowsgomur, github: https://github.com/yaoyunchen)
 
 ## DISCLAIMER
+"Champion Mastery League Gambler" isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
